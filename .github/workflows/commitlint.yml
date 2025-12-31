@@ -1,18 +1,7 @@
 # =============================================================================
 # COMMITLINT - Validate PR Title and Body
 # =============================================================================
-# STATUS: DISABLED (remove 'if: false' to enable)
-#
 # PURPOSE: Validates that PR titles and bodies follow conventional commit format
-#
-# REQUIRES:
-#   - package.json with commitlint dependencies
-#   - .commitlintrc.js configuration file
-#
-# TO ENABLE:
-#   1. Run: npm init -y && npm install --save-dev @commitlint/cli @commitlint/config-conventional
-#   2. Create .commitlintrc.js with your commit rules
-#   3. Remove 'if: false' from the job below
 # =============================================================================
 
 name: Commitlint
@@ -23,7 +12,6 @@ on:
 
 jobs:
   commitlint:
-    if: false  # DISABLED - Remove this line to enable
     name: Validate PR Title and Body
     runs-on: ubuntu-latest
     steps:

@@ -250,11 +250,12 @@ program
   .command("create-issue")
   .description("Create a new issue in Linear. Keep the Issue description concise, precise and accurate. Always include objectives and acceptance criteria as bullet points. Do not add any implementation plan or phases.")
   .requiredOption("-t, --title <title>", "Issue title")
-  .requiredOption("--team <teamKey>", "Team key (e.g., CLAI)")
+  .requiredOption("--team <teamKey>", "Team key (e.g., HAY)")
   .option("-d, --description <description>", "Issue description (markdown)")
   .option("-a, --assignee <username>", "Assignee username")
   .option("-p, --priority <priority>", "Priority (0=none, 1=urgent, 2=high, 3=medium, 4=low)", "0")
-  .action(async (options: { title: string; team: string; description?: string; assignee?: string; priority?: string }) => {
+  .option("-l, --labels <labels>", "Comma-separated label names (e.g., 'research,backend')")
+  .action(async (options: { title: string; team: string; description?: string; assignee?: string; priority?: string; labels?: string }) => {
     try {
       if (!linear) {
         throw new Error("Linear client not initialized. Check your API key.");
@@ -284,6 +285,32 @@ program
         }
       }
 
+      // Find labels if provided
+      let labelIds: string[] | undefined;
+      if (options.labels) {
+        const requestedLabels = options.labels.split(',').map(l => l.trim().toLowerCase());
+        const allLabels = await linear.issueLabels();
+        labelIds = [];
+
+        for (const reqLabel of requestedLabels) {
+          const found = allLabels.nodes.find(l => l.name.toLowerCase() === reqLabel);
+          if (found) {
+            labelIds.push(found.id);
+          } else {
+            // Create the label if it doesn't exist
+            const result = await linear.issueLabelCreate({
+              name: reqLabel.charAt(0).toUpperCase() + reqLabel.slice(1),
+              teamId: team.id,
+            });
+            const newLabel = await result.issueLabel;
+            if (newLabel) {
+              labelIds.push(newLabel.id);
+              console.log(chalk.dim(`Created label: ${newLabel.name}`));
+            }
+          }
+        }
+      }
+
       // Create the issue
       const issuePayload: {
         title: string;
@@ -291,6 +318,7 @@ program
         description?: string;
         assigneeId?: string;
         priority?: number;
+        labelIds?: string[];
       } = {
         title: options.title,
         teamId: team.id,
@@ -304,6 +332,9 @@ program
       }
       if (options.priority) {
         issuePayload.priority = parseInt(options.priority, 10);
+      }
+      if (labelIds && labelIds.length > 0) {
+        issuePayload.labelIds = labelIds;
       }
 
       const result = await linear.issueCreate(issuePayload);
@@ -319,6 +350,122 @@ program
       }
     } catch (error) {
       console.error(chalk.red("Error creating issue:"), error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
+program
+  .command("update-issue <issueId>")
+  .description("Update an existing issue (add labels, change assignee, priority, project)")
+  .option("-l, --labels <labels>", "Comma-separated label names to add")
+  .option("-a, --assignee <username>", "Assignee username")
+  .option("-p, --priority <priority>", "Priority (1=urgent, 2=high, 3=medium, 4=low)")
+  .option("--project <name>", "Project name to add issue to")
+  .action(async (issueId: string, options: { labels?: string; assignee?: string; priority?: string; project?: string }) => {
+    try {
+      if (!linear) {
+        throw new Error("Linear client not initialized. Check your API key.");
+      }
+
+      const resolvedId = await resolveIssueId(issueId);
+      const issue = await linear.issue(resolvedId);
+      if (!issue) {
+        console.error(chalk.red(`Issue ${resolvedId} not found.`));
+        process.exit(1);
+      }
+
+      const updatePayload: { labelIds?: string[]; assigneeId?: string; priority?: number; projectId?: string } = {};
+
+      // Handle labels
+      if (options.labels) {
+        const requestedLabels = options.labels.split(',').map(l => l.trim().toLowerCase());
+        const allLabels = await linear.issueLabels();
+        const team = await issue.team;
+        const labelIds: string[] = [];
+
+        // Get existing label IDs
+        const existingLabels = await issue.labels();
+        existingLabels.nodes.forEach(l => labelIds.push(l.id));
+
+        for (const reqLabel of requestedLabels) {
+          const found = allLabels.nodes.find(l => l.name.toLowerCase() === reqLabel);
+          if (found) {
+            if (!labelIds.includes(found.id)) {
+              labelIds.push(found.id);
+            }
+          } else {
+            // Create the label if it doesn't exist
+            const result = await linear.issueLabelCreate({
+              name: reqLabel.charAt(0).toUpperCase() + reqLabel.slice(1),
+              teamId: team!.id,
+            });
+            const newLabel = await result.issueLabel;
+            if (newLabel) {
+              labelIds.push(newLabel.id);
+              console.log(chalk.dim(`Created label: ${newLabel.name}`));
+            }
+          }
+        }
+        updatePayload.labelIds = labelIds;
+      }
+
+      // Handle assignee
+      if (options.assignee) {
+        const users = await linear.users();
+        const user = users.nodes.find(u =>
+          u.name.toLowerCase().includes(options.assignee!.toLowerCase()) ||
+          u.email?.toLowerCase().includes(options.assignee!.toLowerCase())
+        );
+        if (user) {
+          updatePayload.assigneeId = user.id;
+        } else {
+          console.error(chalk.yellow(`Warning: User '${options.assignee}' not found.`));
+        }
+      }
+
+      // Handle priority
+      if (options.priority) {
+        updatePayload.priority = parseInt(options.priority, 10);
+      }
+
+      // Handle project
+      if (options.project) {
+        // Use raw GraphQL to find project since SDK has schema issues
+        const graphqlClient = linear as any;
+        try {
+          const result = await graphqlClient.client.rawRequest(`
+            query {
+              projects(first: 50) {
+                nodes {
+                  id
+                  name
+                }
+              }
+            }
+          `);
+          const projects = result.data.projects.nodes;
+          const project = projects.find((p: any) =>
+            p.name.toLowerCase().includes(options.project!.toLowerCase())
+          );
+          if (project) {
+            updatePayload.projectId = project.id;
+          } else {
+            console.error(chalk.yellow(`Warning: Project '${options.project}' not found. Available projects:`));
+            projects.forEach((p: any) => console.log(`  - ${p.name}`));
+          }
+        } catch (e) {
+          console.error(chalk.yellow(`Warning: Could not fetch projects.`));
+        }
+      }
+
+      if (Object.keys(updatePayload).length > 0) {
+        await linear.issueUpdate(issue.id, updatePayload);
+        console.log(chalk.green(`Updated ${resolvedId}`));
+      } else {
+        console.log(chalk.yellow("No updates specified."));
+      }
+    } catch (error) {
+      console.error(chalk.red("Error updating issue:"), error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });

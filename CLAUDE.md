@@ -3,6 +3,19 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## First Things First
+
+**At the start of each session:**
+
+1. Check `ai/docs/shared/progress/` for any in-progress tickets
+2. Read the relevant progress file (e.g., `HAY-5.md`) to see what's done and what's next
+3. Continue from the **Next** section, or ask the user what to work on
+
+**Before ending a session or clearing context:**
+
+1. Update the progress file with completed items and next steps
+2. Commit changes if appropriate
+
 ## Project Overview
 
 One Percent Trading Bot - An AI-powered trading bot project focused on
@@ -33,7 +46,8 @@ one-percent-trading-bot/
 │   │   ├── shared/
 │   │   │   ├── plans/            # Implementation plans from /create-plan
 │   │   │   ├── tickets/          # Ticket analysis from /analyze-triage-ticket
-│   │   │   └── prs/              # PR descriptions from /describe-pr
+│   │   │   ├── prs/              # PR descriptions from /describe-pr
+│   │   │   └── progress/         # Session progress (check first!)
 │   │   └── triage-to-prod-reports/  # Workflow reports
 │   └── tools/
 │       └── linear/               # Linear CLI for ticket management
@@ -47,41 +61,45 @@ one-percent-trading-bot/
 
 ## Linear Integration
 
-| Setting | Value |
-|---------|-------|
-| Team Key | `HAY` |
-| Ticket Format | `HAY-XXX` |
-| Workspace | `haykay` |
-| API Key | Loaded via direnv from `.envrc` |
+| Setting       | Value                           |
+| ------------- | ------------------------------- |
+| Team Key      | `HAY`                           |
+| Ticket Format | `HAY-XXX`                       |
+| Workspace     | `haykay`                        |
+| API Key       | Loaded via direnv from `.envrc` |
 
 ### Linear CLI Usage
 
+**Important:** Always use the wrapper script `./ai/tools/linear/linear` instead of
+running `npx tsx` directly. The wrapper automatically loads environment variables
+from `.envrc` via direnv, which doesn't happen automatically in Claude Code sessions.
+
 ```bash
 # List your assigned issues
-npx tsx ai/tools/linear/linear-cli.ts list-issues
+./ai/tools/linear/linear list-issues
 
 # Get issue details
-npx tsx ai/tools/linear/linear-cli.ts get-issue HAY-5
+./ai/tools/linear/linear get-issue HAY-5
 
 # Create a new issue
-npx tsx ai/tools/linear/linear-cli.ts create-issue --team HAY --title "Title" --description "Description"
+./ai/tools/linear/linear create-issue --team HAY --title "Title" --description "Description"
 
 # Add a comment
-npx tsx ai/tools/linear/linear-cli.ts add-comment "Comment text" --issue-id HAY-5
+./ai/tools/linear/linear add-comment "Comment text" --issue-id HAY-5
 ```
 
 ## AI Workflow Commands
 
-| Command | Purpose | Output Location |
-|---------|---------|-----------------|
-| `/commit` | Create conventional commits | Git history |
-| `/create-plan` | Design implementation plans | `ai/docs/shared/plans/` |
-| `/implement-plan` | Execute approved plans | Code changes |
-| `/code-review` | AI-powered code review | Console output |
-| `/research-codebase` | Document existing code | `ai/docs/research/` |
-| `/describe-pr` | Generate PR descriptions | `ai/docs/shared/prs/` |
-| `/triage-to-prod` | Full ticket-to-PR automation | Multiple locations |
-| `/analyze-triage-ticket` | Deep ticket analysis | `ai/docs/shared/tickets/` |
+| Command                  | Purpose                      | Output Location           |
+| ------------------------ | ---------------------------- | ------------------------- |
+| `/commit`                | Create conventional commits  | Git history               |
+| `/create-plan`           | Design implementation plans  | `ai/docs/shared/plans/`   |
+| `/implement-plan`        | Execute approved plans       | Code changes              |
+| `/code-review`           | AI-powered code review       | Console output            |
+| `/research-codebase`     | Document existing code       | `ai/docs/research/`       |
+| `/describe-pr`           | Generate PR descriptions     | `ai/docs/shared/prs/`     |
+| `/triage-to-prod`        | Full ticket-to-PR automation | Multiple locations        |
+| `/analyze-triage-ticket` | Deep ticket analysis         | `ai/docs/shared/tickets/` |
 
 ## Development Workflow
 
@@ -116,6 +134,7 @@ Optional body with line length ≤ 72 characters.
 ```
 
 **Format Rules:**
+
 - Header max: 72 chars (prefer 50)
 - Body wrap: 72 chars
 - Type and scope: lowercase
@@ -126,6 +145,7 @@ Optional body with line length ≤ 72 characters.
 **Scopes:** TBD as project grows (e.g., api, trading, data, ui)
 
 **Examples:**
+
 ```
 ✅ feat(api): Add Perplexity integration (35 chars)
 ✅ fix(trading): Handle rate limit errors (40 chars)
@@ -139,10 +159,12 @@ Optional body with line length ≤ 72 characters.
 All development MUST occur on feature branches.
 
 **Branch Naming:**
+
 - Feature: `feature/description` or `yourname/hay-XX-description`
 - Bug fix: `fix/description`
 
 **Workflow:**
+
 ```bash
 git checkout -b feature/hay-5-perplexity
 # ... make changes ...
@@ -166,23 +188,23 @@ PERPLEXITY_API_KEY=       # Perplexity AI for research (HAY-5)
 
 > Update this section as you choose your tech stack
 
-| Component | Technology |
-|-----------|------------|
-| Language | TBD |
-| Framework | TBD |
-| Database | TBD |
+| Component   | Technology                       |
+| ----------- | -------------------------------- |
+| Language    | TBD                              |
+| Framework   | TBD                              |
+| Database    | TBD                              |
 | AI Research | Perplexity API (planned - HAY-5) |
-| Trading API | TBD |
+| Trading API | TBD                              |
 
 ## File Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
-| General | lowercase with hyphens | `trading-strategy.py` |
-| Classes | PascalCase | `TradingStrategy` |
-| Functions | camelCase or snake_case | `calculateProfit` |
-| Tests | `*_test.*` or `*.test.*` | `strategy_test.py` |
-| Markdown | kebab-case | `api-design.md` |
+| Type      | Convention               | Example               |
+| --------- | ------------------------ | --------------------- |
+| General   | lowercase with hyphens   | `trading-strategy.py` |
+| Classes   | PascalCase               | `TradingStrategy`     |
+| Functions | camelCase or snake_case  | `calculateProfit`     |
+| Tests     | `*_test.*` or `*.test.*` | `strategy_test.py`    |
+| Markdown  | kebab-case               | `api-design.md`       |
 
 ## Coding Standards
 
@@ -233,7 +255,7 @@ PERPLEXITY_API_KEY=       # Perplexity AI for research (HAY-5)
 
 ```bash
 # Check Linear connection
-npx tsx ai/tools/linear/linear-cli.ts list-issues
+./ai/tools/linear/linear list-issues
 
 # Start work on a ticket
 /triage-to-prod HAY-5

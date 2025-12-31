@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Gemini CLI Wrapper
+# This wrapper ensures direnv is loaded before running the CLI.
+# Usage: ./gemini <command> [options]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Load direnv if available
+if command -v direnv &> /dev/null && [ -f "$PROJECT_ROOT/.envrc" ]; then
+  eval "$(direnv export bash 2>/dev/null)"
+fi
+
+# Run the CLI
+exec npx tsx "$SCRIPT_DIR/gemini-cli.ts" "$@"

@@ -128,7 +128,7 @@ from `.envrc` via direnv, which doesn't happen automatically in Claude Code sess
 All commits must follow conventional commit format:
 
 ```
-<type>(<scope>): <Summary in sentence case>
+<type>(<scope>): <summary in lowercase>
 
 Optional body with line length ≤ 72 characters.
 ```
@@ -137,8 +137,8 @@ Optional body with line length ≤ 72 characters.
 
 - Header max: 72 chars (prefer 50)
 - Body wrap: 72 chars
-- Type and scope: lowercase
-- Summary: sentence case
+- Type, scope, and summary: all lowercase
+- Summary must not start with uppercase
 
 **Types:** feat, fix, docs, style, refactor, test, chore, ci, perf, build
 
@@ -147,9 +147,10 @@ Optional body with line length ≤ 72 characters.
 **Examples:**
 
 ```
-✅ feat(api): Add Perplexity integration (35 chars)
-✅ fix(trading): Handle rate limit errors (40 chars)
-❌ feat(api): Add comprehensive Perplexity API integration with error handling (76 chars) - TOO LONG
+✅ feat(api): add perplexity integration (35 chars)
+✅ fix(trading): handle rate limit errors (40 chars)
+❌ feat(api): Add Perplexity integration - WRONG (uppercase)
+❌ feat(api): add comprehensive perplexity api integration with error handling (76 chars) - TOO LONG
 ```
 
 ## Git Branch Protection
@@ -208,13 +209,44 @@ PERPLEXITY_API_KEY=       # Perplexity AI for research (HAY-5)
 
 ## Coding Standards
 
-### General Principles
+### Core Principles
+
+All code must follow these fundamental software engineering principles:
+
+**KISS (Keep It Simple, Stupid)**
+
+- Prefer simple, straightforward solutions over clever ones
+- If code needs extensive comments to explain, simplify it
+
+**DRY (Don't Repeat Yourself)**
+
+- Extract repeated code into reusable functions/modules
+- Single source of truth for business logic
+
+**YAGNI (You Aren't Gonna Need It)**
+
+- Don't build features until they're actually needed
+- Avoid premature optimization and over-engineering
+
+**SOLID Principles**
+
+- **S**ingle Responsibility: One class/function = one job
+- **O**pen/Closed: Open for extension, closed for modification
+- **L**iskov Substitution: Subtypes must be substitutable for base types
+- **I**nterface Segregation: Many specific interfaces > one general interface
+- **D**ependency Inversion: Depend on abstractions, not concretions
+
+### Clean Code Guidelines
 
 - Write clean, readable code with meaningful names
 - Keep functions small and focused (single responsibility)
 - Handle errors explicitly - don't swallow exceptions
 - Write tests for critical functionality
 - Document complex logic with comments
+- Use consistent formatting and style
+- Limit function parameters (max 3-4 ideally)
+- Avoid deep nesting (max 2-3 levels)
+- Return early to reduce complexity
 
 ### Security
 

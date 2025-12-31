@@ -1,6 +1,5 @@
 ---
-description:
-  Generate comprehensive PR descriptions following repository templates
+description: Generate comprehensive PR descriptions following repository templates
 ---
 
 # Generate PR Description

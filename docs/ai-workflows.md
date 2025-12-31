@@ -38,6 +38,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: Create conventional commits with proper formatting.
 
 **Features**:
+
 - Enforces Conventional Commits format: `<type>(<scope>): <Summary>`
 - Validates header length (max 72 chars, prefer 50)
 - Validates body line length (max 72 chars)
@@ -45,6 +46,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 - Offers to stage unstaged files
 
 **Usage**:
+
 ```bash
 /commit              # Prompts to stage unstaged files
 /commit staged-only  # Only commit staged files
@@ -60,6 +62,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: Create detailed implementation plans through interactive research.
 
 **Features**:
+
 - Interactive, iterative planning process
 - Spawns research subagents to gather codebase context
 - Creates structured plan documents with phases, success criteria
@@ -67,6 +70,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 - Plans saved to `ai/docs/shared/plans/YYYY-MM-DD-description.md`
 
 **Workflow**:
+
 1. Read ticket/requirements
 2. Spawn parallel research tasks (codebase-locator, codebase-analyzer)
 3. Ask clarifying questions
@@ -82,6 +86,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: Execute approved implementation plans phase-by-phase.
 
 **Features**:
+
 - Reads plan files from `ai/docs/shared/plans/`
 - Implements each phase with verification
 - Updates checkboxes in plan as sections complete
@@ -89,6 +94,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 - Handles mismatches between plan and reality
 
 **Workflow**:
+
 1. Read plan completely
 2. Check for existing checkmarks (resume support)
 3. Implement phase-by-phase
@@ -104,6 +110,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: AI-powered code review and auto-fix loop.
 
 **Features**:
+
 - Reviews uncommitted, staged, recent commits, or branch changes
 - Categorizes issues: CRITICAL, HIGH, MEDIUM, LOW
 - Auto-fixes CRITICAL and HIGH issues
@@ -112,6 +119,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 - Supports auto mode for unattended operation
 
 **Usage**:
+
 ```bash
 /code-review              # Review uncommitted, max 3 loops
 /code-review 2 branch     # Review branch changes, max 2 loops
@@ -120,6 +128,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 ```
 
 **Issue Categories Checked**:
+
 - Code quality and best practices
 - Potential bugs
 - Performance considerations
@@ -136,6 +145,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: Document codebase as-is without evaluation.
 
 **Features**:
+
 - Spawns parallel subagents for comprehensive research
 - Creates research documents with metadata
 - Includes GitHub permalinks when possible
@@ -145,6 +155,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Key Principle**: Documents ONLY what exists - no improvements, critiques, or recommendations unless explicitly asked.
 
 **Subagents Used**:
+
 - `codebase-locator`: Find WHERE files are
 - `codebase-analyzer`: Understand HOW code works
 - `codebase-pattern-finder`: Find existing patterns
@@ -159,6 +170,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: Generate comprehensive PR descriptions.
 
 **Features**:
+
 - Reads PR template from `ai/docs/shared/pr_description.md`
 - Analyzes full PR diff and commit history
 - Runs verification commands and marks checkboxes
@@ -166,6 +178,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 - Updates PR directly via GitHub CLI
 
 **Workflow**:
+
 1. Find/select PR to describe
 2. Gather PR diff, commits, metadata
 3. Analyze changes thoroughly
@@ -182,6 +195,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: Fully automated ticket-to-production workflow.
 
 **Features**:
+
 - Complete development lifecycle automation
 - Uses Linear CLI for ticket management
 - Supports `--autonomous` mode for unattended operation
@@ -189,6 +203,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 - State management for resumability
 
 **Phases**:
+
 1. **Discovery**: Find tickets in Triage status
 2. **Analysis**: Deep ticket analysis (subagent)
 3. **Transition**: Move to "Research Needed" status
@@ -200,6 +215,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 9. **PR Creation**: Create PR, update ticket
 
 **Usage**:
+
 ```bash
 /triage-to-prod              # Interactive mode
 /triage-to-prod CLM-123      # Specific ticket
@@ -215,6 +231,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 **Purpose**: Deep analysis of tickets to extract actionable requirements.
 
 **Features**:
+
 - Extracts core requirements, acceptance criteria, constraints
 - Filters noise from ticket discussions
 - Creates focused research prompts for next phase
@@ -222,6 +239,7 @@ Slash commands are invoked with `/command-name` in Claude Code.
 - Used as subagent from /triage-to-prod
 
 **Output Structure**:
+
 - Document Context (purpose, priority, stakeholder)
 - Core Requirements (with clarity assessment)
 - Acceptance Criteria
@@ -248,6 +266,7 @@ Agents are specialized subagents invoked via the Task tool with `subagent_type: 
 **Tools**: Grep, Glob, LS
 
 **Responsibilities**:
+
 - Search for files by topic/feature
 - Categorize by type (implementation, tests, config, docs)
 - Return organized results with full paths
@@ -265,6 +284,7 @@ Agents are specialized subagents invoked via the Task tool with `subagent_type: 
 **Tools**: Read, Grep, Glob, LS
 
 **Responsibilities**:
+
 - Read and understand implementation details
 - Trace data flow
 - Identify architectural patterns
@@ -283,6 +303,7 @@ Agents are specialized subagents invoked via the Task tool with `subagent_type: 
 **Tools**: Grep, Glob, Read, LS
 
 **Responsibilities**:
+
 - Search for comparable features
 - Extract reusable patterns
 - Provide concrete code examples
@@ -301,6 +322,7 @@ Agents are specialized subagents invoked via the Task tool with `subagent_type: 
 **Tools**: Read, Grep, Glob, LS
 
 **Responsibilities**:
+
 - Extract key decisions and conclusions
 - Filter out noise and tangential content
 - Validate relevance to current context
@@ -319,6 +341,7 @@ Agents are specialized subagents invoked via the Task tool with `subagent_type: 
 **Tools**: Grep, Glob, LS
 
 **Responsibilities**:
+
 - Search ai/docs/ structure (shared/, personal/, global/)
 - Categorize by type (tickets, research, plans, PRs)
 - Handle searchable/ path correction
@@ -336,12 +359,14 @@ Agents are specialized subagents invoked via the Task tool with `subagent_type: 
 **Tools**: WebSearch, WebFetch, TodoWrite, Read, Grep, Glob, LS
 
 **Responsibilities**:
+
 - Analyze queries for search strategy
 - Execute strategic searches
 - Fetch and analyze content
 - Synthesize findings with citations
 
 **Search Strategies**:
+
 - API/Library documentation
 - Best practices (recent articles)
 - Technical solutions (Stack Overflow, GitHub)
@@ -360,25 +385,28 @@ Skills are complex, multi-step workflows that encapsulate domain knowledge.
 **Purpose**: Validate code against CI/CD requirements before pushing.
 
 **When to Run**:
+
 - Before every `git push`
 - Before creating/updating PRs
 - After significant code changes
 
 **Subsystem Detection**:
 
-| Subsystem | Trigger Files | Checks |
-|-----------|---------------|--------|
-| Go | `**/*.go`, `go.mod` | golangci-lint, go test -race, build |
-| Web | `web/**` | ESLint, Prettier, TypeScript, Vitest, build |
-| Python | `pundora/**/*.py` | Ruff check/format, pytest, pip-audit |
+| Subsystem | Trigger Files       | Checks                                      |
+| --------- | ------------------- | ------------------------------------------- |
+| Go        | `**/*.go`, `go.mod` | golangci-lint, go test -race, build         |
+| Web       | `web/**`            | ESLint, Prettier, TypeScript, Vitest, build |
+| Python    | `pundora/**/*.py`   | Ruff check/format, pytest, pip-audit        |
 
 **Commit Message Validation**:
+
 - Format: `<type>(<scope>): <Summary>`
 - Header max: 72 chars (prefer 50)
 - Body lines max: 72 chars
 - Types: feat, fix, docs, style, refactor, test, chore, ci, perf, build
 
 **Branch Protection**:
+
 - Blocks commits to main/master
 - Requires feature branches
 - Validates branch naming conventions
@@ -394,6 +422,7 @@ Skills are complex, multi-step workflows that encapsulate domain knowledge.
 **Purpose**: Root-level project context and guidance for Claude Code.
 
 **Contains**:
+
 - Project overview
 - Directory structure
 - Working with subsystems links
@@ -418,7 +447,7 @@ Skills are complex, multi-step workflows that encapsulate domain knowledge.
    ```yaml
    ---
    description: Brief description
-   model: claude-sonnet-4-5-20250929  # Optional
+   model: claude-sonnet-4-5-20250929 # Optional
    ---
    ```
 3. Write instructions in markdown
@@ -431,7 +460,7 @@ Skills are complex, multi-step workflows that encapsulate domain knowledge.
    ---
    name: your-agent
    description: What it does
-   tools: Read, Grep, Glob, LS  # Allowed tools
+   tools: Read, Grep, Glob, LS # Allowed tools
    ---
    ```
 3. Write agent instructions

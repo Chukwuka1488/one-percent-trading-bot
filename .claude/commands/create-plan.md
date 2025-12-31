@@ -1,6 +1,5 @@
 ---
-description:
-  Create implementation plans with thorough research (no artifacts directory)
+description: Create implementation plans with thorough research (no artifacts directory)
 model: claude-sonnet-4-5-20250929
 ---
 

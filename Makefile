@@ -18,13 +18,13 @@
 # Check/fix formatting for markdown, YAML, and JSON files
 # Requires: npm with prettier installed (npm install)
 
-# .PHONY: format
-# format: ## Check formatting for markdown, YAML, and JSON files
-# 	npm run format:check
+.PHONY: format
+format: ## Check formatting for markdown files
+	npm run format:check
 
-# .PHONY: format-fix
-# format-fix: ## Fix formatting for markdown, YAML, and JSON files
-# 	npm run format:fix
+.PHONY: format-fix
+format-fix: ## Fix formatting for markdown files
+	npm run format:fix
 
 # -----------------------------------------------------------------------------
 # CODE QUALITY CHECK TARGETS

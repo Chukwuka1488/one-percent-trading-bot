@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Wrapper script for perplexity-cli.ts that ensures direnv environment is loaded
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Load direnv environment if available
+if command -v direnv &> /dev/null && [ -f "$PROJECT_ROOT/.envrc" ]; then
+  eval "$(direnv export bash 2>/dev/null)"
+fi
+
+# Run the Perplexity CLI
+cd "$SCRIPT_DIR" && exec npx tsx perplexity-cli.ts "$@"

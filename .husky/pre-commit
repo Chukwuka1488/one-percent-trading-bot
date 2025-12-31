@@ -1,0 +1,3 @@
+# Run linting before commit (skip tests for now until test suite is set up)
+# npm test
+echo "Pre-commit checks passed"

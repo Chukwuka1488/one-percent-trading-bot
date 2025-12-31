@@ -1,6 +1,5 @@
 ---
-description:
-  Implement technical plans from ai/docs/shared/plans with verification
+description: Implement technical plans from ai/docs/shared/plans with verification
 ---
 
 # Implement Plan

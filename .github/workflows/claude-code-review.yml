@@ -1,0 +1,71 @@
+# =============================================================================
+# CLAUDE CODE REVIEW - AI-Powered PR Review
+# =============================================================================
+# STATUS: DISABLED (remove 'if: false' to enable)
+#
+# PURPOSE: Automatically reviews PRs using Claude AI and posts feedback
+#
+# REQUIRES:
+#   - ANTHROPIC_API_KEY secret in GitHub repository settings
+#
+# TO ENABLE:
+#   1. Go to GitHub repo Settings → Secrets → Actions
+#   2. Add ANTHROPIC_API_KEY with your Anthropic API key
+#   3. Remove 'if: false' from the job below
+#
+# OPTIONAL: Uncomment 'paths' to only review specific file types
+# =============================================================================
+
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "**/*.py"
+    #   - "**/*.ts"
+    #   - "**/*.js"
+    #   - "**/*.go"
+
+jobs:
+  claude-review:
+    if: false  # DISABLED - Remove this line to enable
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Please review this pull request and provide feedback on:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - Performance considerations
+            - Security concerns
+            - Test coverage
+
+            Use the repository's CLAUDE.md for guidance on style and conventions.
+            Be constructive and helpful in your feedback.
+
+            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+
+          claude_args:
+            '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh
+            issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr
+            view:*),Bash(gh pr list:*)"'

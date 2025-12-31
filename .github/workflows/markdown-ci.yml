@@ -1,0 +1,49 @@
+# =============================================================================
+# MARKDOWN CI - Format Check for Markdown Files
+# =============================================================================
+# STATUS: DISABLED (remove 'if: false' to enable)
+#
+# PURPOSE: Ensures all markdown files follow consistent formatting
+#
+# REQUIRES:
+#   - package.json with prettier
+#   - npm script: "format:check": "prettier --check '**/*.md'"
+#
+# TO ENABLE:
+#   1. Run: npm init -y && npm install --save-dev prettier
+#   2. Add format:check script to package.json
+#   3. Remove 'if: false' from the job below
+# =============================================================================
+
+name: Markdown CI
+
+on:
+  pull_request:
+    paths:
+      - "**.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "**.md"
+
+jobs:
+  format-check:
+    if: false  # DISABLED - Remove this line to enable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check markdown formatting
+        run: npm run format:check

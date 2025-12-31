@@ -1,0 +1,61 @@
+# =============================================================================
+# COMMITLINT - Validate PR Title and Body
+# =============================================================================
+# STATUS: DISABLED (remove 'if: false' to enable)
+#
+# PURPOSE: Validates that PR titles and bodies follow conventional commit format
+#
+# REQUIRES:
+#   - package.json with commitlint dependencies
+#   - .commitlintrc.js configuration file
+#
+# TO ENABLE:
+#   1. Run: npm init -y && npm install --save-dev @commitlint/cli @commitlint/config-conventional
+#   2. Create .commitlintrc.js with your commit rules
+#   3. Remove 'if: false' from the job below
+# =============================================================================
+
+name: Commitlint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  commitlint:
+    if: false  # DISABLED - Remove this line to enable
+    name: Validate PR Title and Body
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: echo "$PR_TITLE" | npx commitlint
+
+      - name: Validate PR body
+        if: github.event.pull_request.body != ''
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          # Combine title and body as a complete commit message
+          COMMIT_MSG="${PR_TITLE}"
+          if [ -n "$PR_BODY" ]; then
+            COMMIT_MSG="${COMMIT_MSG}
+
+          ${PR_BODY}"
+          fi
+          echo "$COMMIT_MSG" | npx commitlint

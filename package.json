@@ -1,0 +1,30 @@
+{
+  "name": "one-percent-trading-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0",
+    "format:check": "prettier --check '**/*.md' --ignore-path .gitignore",
+    "format:fix": "prettier --write '**/*.md' --ignore-path .gitignore"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chukwuka1488/one-percent-trading-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chukwuka1488/one-percent-trading-bot/issues"
+  },
+  "homepage": "https://github.com/Chukwuka1488/one-percent-trading-bot#readme",
+  "description": "",
+  "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "prettier": "^3.7.4"
+  }
+}

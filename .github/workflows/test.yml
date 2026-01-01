@@ -1,23 +1,19 @@
 # =============================================================================
-# MARKDOWN CI - Format Check for Markdown Files
+# TEST - Run Tests on PR and Push
 # =============================================================================
-# PURPOSE: Ensures all markdown files follow consistent formatting
+# PURPOSE: Runs test suite to ensure code quality
 # =============================================================================
 
-name: Markdown CI
+name: Test
 
 on:
-  pull_request:
-    paths:
-      - "**.md"
   push:
-    branches:
-      - main
-    paths:
-      - "**.md"
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
-  format-check:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,10 +24,9 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Check markdown formatting
-        run: npm run format:check
+      - name: Run tests
+        run: npm test

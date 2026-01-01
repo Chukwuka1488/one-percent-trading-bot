@@ -141,18 +141,41 @@ async function getIssue(issueId?: string) {
     const comments = await issue.comments();
     const assignee = await issue.assignee;
     const state = await issue.state;
-    
+    const labels = await issue.labels();
+
     // Format issue details with branch name in header
     console.log(chalk.bold(`\n[${issue.identifier}] ${issue.title}`));
     if (issue.branchName) {
       console.log(chalk.dim(`Branch: ${issue.branchName}`));
     }
     console.log(chalk.dim(`Status: ${state?.name || "Unknown"}`));
-    
+
     if (assignee) {
       console.log(chalk.dim(`Assignee: ${assignee.name}`));
     }
-    
+
+    if (labels.nodes.length > 0) {
+      console.log(chalk.dim(`Labels: ${labels.nodes.map(l => l.name).join(", ")}`));
+    }
+
+    // Get project using raw GraphQL to avoid SDK milestone bug
+    try {
+      const graphqlClient = (linear as any).client;
+      const result = await graphqlClient.rawRequest(`
+        query GetIssueProject($id: String!) {
+          issue(id: $id) {
+            project { name }
+          }
+        }
+      `, { id: resolvedId });
+      const projectName = result.data?.issue?.project?.name;
+      if (projectName) {
+        console.log(chalk.dim(`Project: ${projectName}`));
+      }
+    } catch {
+      // Ignore project fetch errors
+    }
+
     if (issue.description) {
       console.log(chalk.bold("\nDescription:"));
       console.log(issue.description);

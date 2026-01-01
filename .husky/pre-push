@@ -1,0 +1,92 @@
+#!/usr/bin/env sh
+
+# Pre-push hook: Validate commit messages before pushing
+#
+# This validates all commits being pushed:
+# - Commit title format (conventional commits)
+# - Body line length (72 char max)
+#
+# This catches issues before CI fails on PR creation.
+# To bypass in emergencies: git push --no-verify
+
+set -e
+
+# ==============================================================================
+# BRANCH PROTECTION
+# ==============================================================================
+CURRENT_BRANCH=$(git branch --show-current)
+
+if [ -z "$CURRENT_BRANCH" ]; then
+  echo "❌ Cannot push from detached HEAD state!"
+  echo "   Create a branch first: git checkout -b feature/your-feature"
+  exit 1
+fi
+
+if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
+  echo "❌ Cannot push directly to $CURRENT_BRANCH!"
+  echo "   Create a feature branch first."
+  exit 1
+fi
+
+# ==============================================================================
+# VALIDATE COMMIT MESSAGES
+# ==============================================================================
+echo "📝 Validating commit messages..."
+
+MAIN_BRANCH=origin/main
+
+# Read push info from stdin
+COMMITS_TO_VALIDATE=""
+while read local_ref local_sha remote_ref remote_sha; do
+  # Skip branch deletion
+  if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+    continue
+  fi
+
+  # Get commits to validate
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    # New branch
+    if git rev-parse --verify "$MAIN_BRANCH" >/dev/null 2>&1; then
+      COMMITS_TO_VALIDATE=$(git rev-list "$MAIN_BRANCH".."$local_sha")
+    fi
+  else
+    # Existing branch - only new commits
+    COMMITS_TO_VALIDATE=$(git rev-list "$remote_sha".."$local_sha")
+  fi
+done
+
+if [ -n "$COMMITS_TO_VALIDATE" ]; then
+  COMMIT_COUNT=$(echo "$COMMITS_TO_VALIDATE" | wc -l | tr -d ' ')
+  echo "   Found $COMMIT_COUNT commit(s) to validate"
+
+  COMMIT_NUM=0
+  while IFS= read -r commit; do
+    COMMIT_NUM=$((COMMIT_NUM + 1))
+    SHORT_SHA=$(git log -1 --format=%h "$commit")
+    SUBJECT=$(git log -1 --format=%s "$commit")
+
+    echo "   [$COMMIT_NUM/$COMMIT_COUNT] $SHORT_SHA: $SUBJECT"
+
+    # Get full commit message
+    FULL_MSG=$(git log -1 --format=%B "$commit")
+
+    # Validate with commitlint
+    if ! echo "$FULL_MSG" | npx commitlint 2>&1; then
+      echo ""
+      echo "❌ Commit $SHORT_SHA has invalid format"
+      echo ""
+      echo "   Common issues:"
+      echo "   - Body lines exceed 72 characters"
+      echo "   - Header exceeds 72 characters"
+      echo "   - Invalid type (use feat, fix, docs, etc.)"
+      echo ""
+      exit 1
+    fi
+  done <<EOF
+$COMMITS_TO_VALIDATE
+EOF
+
+  echo "✓ All commits validated"
+fi
+
+echo "Pre-push checks passed"

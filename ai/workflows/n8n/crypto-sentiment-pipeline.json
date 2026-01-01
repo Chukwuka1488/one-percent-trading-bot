@@ -1,0 +1,298 @@
+{
+  "name": "Crypto Sentiment Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-manual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "trigger-schedule",
+      "name": "Every 4 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 500]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "symbol",
+              "name": "symbol",
+              "value": "BTC",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-symbol",
+      "name": "Set Symbol",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"sonar\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a crypto market research assistant. Provide current market sentiment analysis with specific data points.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"What is the current market sentiment for {{ $json.symbol }}? Include recent price action, news, and key factors. Be specific and cite sources.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "perplexity-research",
+      "name": "Perplexity Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 400],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "perplexity-api",
+          "name": "Perplexity API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "research",
+              "name": "research",
+              "value": "={{ $json.choices[0].message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "symbol",
+              "name": "symbol",
+              "value": "={{ $('Set Symbol').item.json.symbol }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-research",
+      "name": "Extract Research",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Analyze this market research for {{ $json.symbol }} and respond ONLY with valid JSON:\\n\\n{{ $json.research }}\\n\\nRespond with this exact JSON format:\\n{\\n  \\\"symbol\\\": \\\"{{ $json.symbol }}\\\",\\n  \\\"sentiment\\\": \\\"bullish\\\" | \\\"bearish\\\" | \\\"neutral\\\",\\n  \\\"confidence\\\": 0.0-1.0,\\n  \\\"recommendation\\\": \\\"buy\\\" | \\\"sell\\\" | \\\"hold\\\",\\n  \\\"risk_level\\\": \\\"low\\\" | \\\"medium\\\" | \\\"high\\\",\\n  \\\"reasoning\\\": \\\"2-3 sentence explanation\\\",\\n  \\\"key_points\\\": [\\\"point1\\\", \\\"point2\\\", \\\"point3\\\"]\\n}\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.2\n  }\n}",
+        "options": {}
+      },
+      "id": "gemini-analysis",
+      "name": "Gemini Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 400],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "gemini-api",
+          "name": "Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract JSON from Gemini response\nconst text = $input.first().json.candidates[0].content.parts[0].text;\n\n// Find JSON in response (handle markdown code blocks)\nconst jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\nconst signal = JSON.parse(jsonMatch[0]);\n\n// Add timestamp\nsignal.timestamp = new Date().toISOString();\nsignal.source = 'n8n-pipeline';\n\nreturn { json: signal };"
+      },
+      "id": "parse-signal",
+      "name": "Parse Signal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-high-confidence",
+              "leftValue": "={{ $json.confidence }}",
+              "rightValue": 0.7,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-confidence",
+      "name": "High Confidence?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [1560, 400]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "value": "public"
+        },
+        "table": {
+          "value": "signals",
+          "__rl": true,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "save-signal",
+      "name": "Save to Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1780, 400],
+      "credentials": {
+        "postgres": {
+          "id": "postgres-trading",
+          "name": "Trading DB"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Symbol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 4 Hours": {
+      "main": [
+        [
+          {
+            "node": "Set Symbol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Symbol": {
+      "main": [
+        [
+          {
+            "node": "Perplexity Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity Research": {
+      "main": [
+        [
+          {
+            "node": "Extract Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Research": {
+      "main": [
+        [
+          {
+            "node": "Gemini Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Analysis": {
+      "main": [
+        [
+          {
+            "node": "Parse Signal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Signal": {
+      "main": [
+        [
+          {
+            "node": "High Confidence?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Confidence?": {
+      "main": [
+        [
+          {
+            "node": "Save to Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "pinData": {}
+}

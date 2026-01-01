@@ -1,0 +1,97 @@
+# One Percent Trading Bot - Local Development Stack
+#
+# Services:
+#   - n8n: Workflow orchestration (Perplexity → Gemini → Signals)
+#   - postgres: Database for n8n + trading data
+#
+# Usage:
+#   docker compose up -d        # Start all services
+#   docker compose logs -f n8n  # View n8n logs
+#   docker compose down         # Stop all services
+#
+# n8n UI: http://localhost:5678
+
+services:
+  # ==========================================================================
+  # PostgreSQL - Database for n8n and trading data
+  # ==========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: trading-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trading}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trading_local}
+      POSTGRES_DB: ${POSTGRES_DB:-trading_bot}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trading}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================================================
+  # n8n - Workflow Orchestration
+  # ==========================================================================
+  # Orchestrates: Perplexity (research) → Gemini (sentiment) → Signals
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: trading-n8n
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database connection
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB:-trading_bot}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER:-trading}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:-trading_local}
+
+      # n8n settings
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+
+      # Timezone
+      GENERIC_TIMEZONE: ${TIMEZONE:-America/New_York}
+      TZ: ${TIMEZONE:-America/New_York}
+
+      # Security (set in .env for production)
+      N8N_BASIC_AUTH_ACTIVE: ${N8N_BASIC_AUTH_ACTIVE:-false}
+      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD:-}
+
+      # API Keys (passed to n8n for workflows)
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      # Mount project for CLI access (optional)
+      - ./ai/tools:/home/node/tools:ro
+    ports:
+      - "5678:5678"
+
+# ==========================================================================
+# Volumes - Persistent data storage
+# ==========================================================================
+# Data stored in .docker/ directory (gitignored)
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/.docker/postgres
+  n8n_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/.docker/n8n

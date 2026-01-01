@@ -29,7 +29,7 @@ Go to **Settings → Credentials** and create:
 - Port: `5432`
 - Database: `trading_bot`
 - User: `trading`
-- Password: `trading_local_dev`
+- Password: `trading_local`
 
 #### 2. Create Signals Table
 
@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS signals (
 
 CREATE INDEX idx_signals_symbol ON signals(symbol);
 CREATE INDEX idx_signals_timestamp ON signals(timestamp);
+CREATE INDEX idx_signals_sentiment ON signals(sentiment);
 ```
 
 #### 3. Import Workflow

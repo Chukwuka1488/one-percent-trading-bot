@@ -129,7 +129,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extract JSON from Gemini response\nconst text = $input.first().json.candidates[0].content.parts[0].text;\n\n// Find JSON in response (handle markdown code blocks)\nconst jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\nconst signal = JSON.parse(jsonMatch[0]);\n\n// Add timestamp\nsignal.timestamp = new Date().toISOString();\nsignal.source = 'n8n-pipeline';\n\nreturn { json: signal };"
+        "jsCode": "// Extract JSON from Gemini response with error handling\nconst input = $input.first();\n\nlet text;\ntry {\n  text = input.json.candidates[0].content.parts[0].text;\n} catch (e) {\n  throw new Error('Gemini response missing expected structure: ' + e.message);\n}\n\nif (typeof text !== 'string') {\n  throw new Error('Gemini response text is not a string.');\n}\n\n// Find JSON in response (handle markdown code blocks)\nconst jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\n\nif (!jsonMatch || !jsonMatch[0]) {\n  throw new Error('No JSON object found in Gemini response text.');\n}\n\nlet signal;\ntry {\n  signal = JSON.parse(jsonMatch[0]);\n} catch (e) {\n  throw new Error('Failed to parse JSON from Gemini response: ' + e.message);\n}\n\nif (typeof signal !== 'object' || signal === null) {\n  throw new Error('Parsed signal is not a valid object.');\n}\n\n// Add timestamp\nsignal.timestamp = new Date().toISOString();\nsignal.source = 'n8n-pipeline';\n\nreturn { json: signal };"
       },
       "id": "parse-signal",
       "name": "Parse Signal",

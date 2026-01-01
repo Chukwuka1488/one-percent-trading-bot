@@ -96,6 +96,7 @@ format-fix: ## Fix formatting for markdown files
 
 .PHONY: up
 up: ## Start all Docker services
+	@mkdir -p .docker/postgres .docker/n8n
 	docker compose up -d
 
 .PHONY: down

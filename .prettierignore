@@ -1,0 +1,8 @@
+# Docker volumes (permission issues)
+.docker/
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/

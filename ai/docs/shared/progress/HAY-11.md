@@ -66,7 +66,7 @@ open http://localhost:5678
      - Port: `5432`
      - DB: `trading_bot`
      - User: `trading`
-     - Pass: `trading_local_dev`
+     - Pass: `trading_local`
 
 2. **Import Workflow**:
    - Workflows → Add → Import from File

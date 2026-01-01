@@ -52,6 +52,28 @@ open http://localhost:5678
                     └───────────────┘     └─────────────┘
 ```
 
+## n8n UI Setup
+
+1. **Create Credentials** (Settings → Credentials):
+   - **Perplexity API**: HTTP Header Auth
+     - Header: `Authorization`
+     - Value: `Bearer YOUR_PERPLEXITY_KEY`
+   - **Gemini API**: HTTP Query Auth
+     - Param: `key`
+     - Value: `YOUR_GEMINI_KEY`
+   - **Trading DB**: PostgreSQL
+     - Host: `postgres`
+     - Port: `5432`
+     - DB: `trading_bot`
+     - User: `trading`
+     - Pass: `trading_local_dev`
+
+2. **Import Workflow**:
+   - Workflows → Add → Import from File
+   - Select: `ai/workflows/n8n/crypto-sentiment-pipeline.json`
+
+3. **Test**: Click "Test Workflow" in n8n
+
 ## Notes
 
 - PostgreSQL stores n8n data + trading signals

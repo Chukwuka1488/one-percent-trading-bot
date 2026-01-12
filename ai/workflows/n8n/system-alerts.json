@@ -1,0 +1,109 @@
+{
+  "name": "System Health Alerts",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-manual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "minutes", "minutesInterval": 5 }] }
+      },
+      "id": "trigger-schedule",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 500]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://freqtrade:8080/api/v1/ping",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": { "timeout": 10000 }
+      },
+      "id": "check-freqtrade",
+      "name": "Check Freqtrade",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 400],
+      "credentials": { "httpBasicAuth": { "id": "freqtrade-api", "name": "Freqtrade API" } },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT 1 as health",
+        "options": {}
+      },
+      "id": "check-postgres",
+      "name": "Check PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [460, 600],
+      "credentials": { "postgres": { "id": "postgres-trading", "name": "Trading DB" } },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const ft = $('Check Freqtrade').first();\nconst pg = $('Check PostgreSQL').first();\nconst staticData = $getWorkflowStaticData('global');\nconst prev = staticData.status || {};\nconst alerts = [];\n\nconst ftOk = !ft.error && ft.json.status;\nconst pgOk = !pg.error;\n\nif (!ftOk && prev.freqtrade !== 'DOWN') {\n  alerts.push({ service: 'Freqtrade', status: 'DOWN', severity: 'critical' });\n}\nif (ftOk && prev.freqtrade === 'DOWN') {\n  alerts.push({ service: 'Freqtrade', status: 'RECOVERED', severity: 'info' });\n}\nif (!pgOk && prev.postgres !== 'DOWN') {\n  alerts.push({ service: 'PostgreSQL', status: 'DOWN', severity: 'critical' });\n}\nif (pgOk && prev.postgres === 'DOWN') {\n  alerts.push({ service: 'PostgreSQL', status: 'RECOVERED', severity: 'info' });\n}\n\nstaticData.status = { freqtrade: ftOk ? 'UP' : 'DOWN', postgres: pgOk ? 'UP' : 'DOWN' };\nreturn alerts.length ? alerts.map(a => ({ json: { ...a, timestamp: new Date().toISOString() } })) : [];"
+      },
+      "id": "aggregate",
+      "name": "Aggregate Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 500]
+    },
+    {
+      "parameters": {
+        "conditions": { "conditions": [{ "leftValue": "={{ $json.service }}", "rightValue": "", "operator": { "type": "string", "operation": "notEmpty" } }] }
+      },
+      "id": "filter",
+      "name": "Has Alerts?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "const a = $json;\nconst emoji = a.status === 'RECOVERED' ? '✅' : '🔴';\nconst msg = `${emoji} *System Alert*\\n\\n🔧 Service: \\`${a.service}\\`\\n📛 Status: ${a.status}\\n⚡ Severity: ${a.severity}\\n🕐 Time: ${a.timestamp}`;\nreturn { json: { message: msg, chat_id: process.env.TELEGRAM_CHAT_ID || '' } };"
+      },
+      "id": "format",
+      "name": "Format Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 500]
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": { "parse_mode": "Markdown" }
+      },
+      "id": "telegram",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1340, 500],
+      "credentials": { "telegramApi": { "id": "telegram-bot", "name": "Telegram Bot" } }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "Check Freqtrade", "type": "main", "index": 0 }, { "node": "Check PostgreSQL", "type": "main", "index": 0 }]] },
+    "Every 5 Minutes": { "main": [[{ "node": "Check Freqtrade", "type": "main", "index": 0 }, { "node": "Check PostgreSQL", "type": "main", "index": 0 }]] },
+    "Check Freqtrade": { "main": [[{ "node": "Aggregate Status", "type": "main", "index": 0 }]] },
+    "Check PostgreSQL": { "main": [[{ "node": "Aggregate Status", "type": "main", "index": 0 }]] },
+    "Aggregate Status": { "main": [[{ "node": "Has Alerts?", "type": "main", "index": 0 }]] },
+    "Has Alerts?": { "main": [[{ "node": "Format Message", "type": "main", "index": 0 }]] },
+    "Format Message": { "main": [[{ "node": "Send Telegram", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": { "global": { "status": {} } },
+  "tags": ["alerts", "health"]
+}

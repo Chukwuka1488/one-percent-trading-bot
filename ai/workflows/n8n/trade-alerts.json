@@ -1,0 +1,99 @@
+{
+  "name": "Trade Alerts",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-manual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "seconds", "secondsInterval": 60 }]
+        }
+      },
+      "id": "trigger-schedule",
+      "name": "Every Minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 500]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://freqtrade:8080/api/v1/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "id": "get-open-trades",
+      "name": "Get Open Trades",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 400],
+      "credentials": {
+        "httpBasicAuth": { "id": "freqtrade-api", "name": "Freqtrade API" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const trades = $json;\nconst staticData = $getWorkflowStaticData('global');\nconst previousIds = staticData.tradeIds || [];\nconst alerts = [];\n\nif (Array.isArray(trades)) {\n  const currentIds = trades.map(t => t.trade_id);\n  for (const trade of trades) {\n    if (!previousIds.includes(trade.trade_id)) {\n      alerts.push({\n        type: 'NEW_TRADE',\n        pair: trade.pair,\n        amount: trade.amount,\n        open_rate: trade.open_rate,\n        stake_amount: trade.stake_amount\n      });\n    }\n  }\n  staticData.tradeIds = currentIds;\n}\n\nreturn alerts.length ? alerts.map(a => ({ json: a })) : [];"
+      },
+      "id": "detect-new",
+      "name": "Detect New Trades",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [{ "leftValue": "={{ $json.type }}", "rightValue": "", "operator": { "type": "string", "operation": "notEmpty" } }]
+        }
+      },
+      "id": "filter",
+      "name": "Has Alerts?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const a = $json;\nconst msg = `🔔 *New Trade*\\n\\n📈 Pair: \\`${a.pair}\\`\\n💰 Amount: ${a.amount}\\n📍 Entry: ${a.open_rate}\\n💵 Stake: ${a.stake_amount} USDT`;\nreturn { json: { message: msg, chat_id: process.env.TELEGRAM_CHAT_ID || '' } };"
+      },
+      "id": "format",
+      "name": "Format Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": { "parse_mode": "Markdown" }
+      },
+      "id": "telegram",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1340, 400],
+      "credentials": { "telegramApi": { "id": "telegram-bot", "name": "Telegram Bot" } }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "Get Open Trades", "type": "main", "index": 0 }]] },
+    "Every Minute": { "main": [[{ "node": "Get Open Trades", "type": "main", "index": 0 }]] },
+    "Get Open Trades": { "main": [[{ "node": "Detect New Trades", "type": "main", "index": 0 }]] },
+    "Detect New Trades": { "main": [[{ "node": "Has Alerts?", "type": "main", "index": 0 }]] },
+    "Has Alerts?": { "main": [[{ "node": "Format Message", "type": "main", "index": 0 }]] },
+    "Format Message": { "main": [[{ "node": "Send Telegram", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": { "global": { "tradeIds": [] } },
+  "tags": ["alerts", "telegram"]
+}

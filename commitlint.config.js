@@ -10,6 +10,6 @@ module.exports = {
     // Header max length (prefer 50, max 72)
     'header-max-length': [2, 'always', 72],
     // Body max line length
-    'body-max-line-length': [2, 'always', 72],
+    'body-max-line-length': [2, 'always', 120],
   },
 };

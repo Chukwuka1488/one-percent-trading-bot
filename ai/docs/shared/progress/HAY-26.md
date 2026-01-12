@@ -39,18 +39,50 @@ Build a sophisticated trading bot dashboard with "Institutional Minimal" design 
 - [x] Set up global CSS with component utilities
 - [x] Created Atomic Design folder structure
 - [x] Updated CLAUDE.md with architecture and conventions
+- [x] Built atom components (Button, Input, Badge, Icon, Text, Spinner)
+- [x] Built molecule components (StatCard, NavItem, FormField, TradeRow)
+- [x] Built organism components (Sidebar, Header, TradeTable)
+- [x] Created DashboardLayout template
+- [x] Updated App.tsx with demo dashboard
 
 ## In Progress
 
-- [ ] Build atom components (Button, Input, Badge, Icon, Text)
+- [ ] Add to Docker setup
 
 ## Next
 
-- [ ] Build molecule components (StatCard, NavItem, FormField)
-- [ ] Build organism components (Sidebar, Header, TradeTable)
-- [ ] Create DashboardLayout template
-- [ ] Add to Docker setup
-- [ ] Connect to Freqtrade API
+- [ ] Connect to Freqtrade API (HAY-31)
+- [ ] Install state management (Zustand, React Query)
+- [ ] Add Lightweight Charts for price visualization
+- [ ] Implement real-time updates
+
+## Components Created
+
+### Atoms (`src/components/atoms/`)
+
+- `Button.tsx` - Primary, secondary, ghost, danger variants
+- `Input.tsx` - Form input with label, error, hint support
+- `Badge.tsx` - Status badges (default, profit, loss, warning, info)
+- `Icon.tsx` - SVG icon component with trading icons
+- `Text.tsx` - Typography component (h1-h4, body, caption, mono)
+- `Spinner.tsx` - Loading spinner
+
+### Molecules (`src/components/molecules/`)
+
+- `StatCard.tsx` - Metric cards with trend indicators
+- `NavItem.tsx` - Sidebar navigation items
+- `FormField.tsx` - Form field wrapper
+- `TradeRow.tsx` - Trade list row component
+
+### Organisms (`src/components/organisms/`)
+
+- `Sidebar.tsx` - Main navigation sidebar with bot status
+- `Header.tsx` - Page header with actions
+- `TradeTable.tsx` - Trade list table
+
+### Templates (`src/components/templates/`)
+
+- `DashboardLayout.tsx` - Main dashboard layout
 
 ## Folder Structure
 
@@ -58,15 +90,16 @@ Build a sophisticated trading bot dashboard with "Institutional Minimal" design 
 dashboard/
 ├── src/
 │   ├── components/
-│   │   ├── atoms/        # ✅ Created
-│   │   ├── molecules/    # ✅ Created
-│   │   ├── organisms/    # ✅ Created
-│   │   └── templates/    # ✅ Created
+│   │   ├── atoms/        # ✅ Button, Input, Badge, Icon, Text, Spinner
+│   │   ├── molecules/    # ✅ StatCard, NavItem, FormField, TradeRow
+│   │   ├── organisms/    # ✅ Sidebar, Header, TradeTable
+│   │   └── templates/    # ✅ DashboardLayout
 │   ├── hooks/            # ✅ Created
 │   ├── services/         # ✅ Created
 │   ├── stores/           # ✅ Created
 │   ├── types/            # ✅ Created
 │   ├── utils/            # ✅ Created
+│   ├── App.tsx           # ✅ Demo dashboard
 │   └── index.css         # ✅ Tailwind configured
 ├── tailwind.config.js    # ✅ Custom theme
 ├── vite.config.ts
@@ -88,3 +121,4 @@ cd dashboard && npm run build
 - Using Tailwind v3 (not v4) for better compatibility
 - Glassmorphism: `glass-card` and `glass-card-sm` utilities
 - Profit/Loss: Always use icon + color (accessibility)
+- TypeScript strict mode with verbatimModuleSyntax enabled

@@ -7,13 +7,13 @@
 
 ## Active Terminals
 
-| Terminal | Focus Area         | Current Ticket | Status       | Working On                           |
-| -------- | ------------------ | -------------- | ------------ | ------------------------------------ |
-| **T1**   | Dashboard/Frontend | HAY-31         | ✅ Complete  | Freqtrade API integration (PR ready) |
-| **T2**   | n8n Workflows      | HAY-17         | 🟢 Active    | Monitoring & Alerting                |
-| **T3**   | Trading Logic      | HAY-12         | 🟢 Active    | Basic Trading Strategy               |
-| **T4**   | AI Tools/Research  | -              | ⚪ Available | -                                    |
-| **T5**   | Tests/Verification | -              | ⚪ Available | -                                    |
+| Terminal | Focus Area         | Current Ticket | Status       | Working On                              |
+| -------- | ------------------ | -------------- | ------------ | --------------------------------------- |
+| **T1**   | Dashboard/Frontend | HAY-29         | ✅ Complete  | Chart & SignalList organisms (PR ready) |
+| **T2**   | n8n Workflows      | HAY-17         | 🟢 Active    | Monitoring & Alerting                   |
+| **T3**   | Trading Logic      | HAY-12         | 🟢 Active    | Basic Trading Strategy                  |
+| **T4**   | AI Tools/Research  | -              | ⚪ Available | -                                       |
+| **T5**   | Tests/Verification | -              | ⚪ Available | -                                       |
 
 ---
 
@@ -79,5 +79,5 @@ cat ai/docs/shared/progress/TERMINAL-STATUS.md
 - **HAY-26**: Dashboard UI setup (merged PR #8)
 - **HAY-27**: Atom components (completed as part of HAY-26)
 - **HAY-28**: Molecule components (completed as part of HAY-26)
-- **HAY-29**: Organism components - partial (Sidebar, Header, TradeTable done)
+- **HAY-29**: Organism components - COMPLETE (all 5 organisms)
 - **HAY-30**: Templates - partial (DashboardLayout done)

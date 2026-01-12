@@ -1,0 +1,22 @@
+# GitGuardian Configuration
+# https://docs.gitguardian.com/ggshield-docs/reference/gitguardian-yaml
+
+version: 2
+
+secret:
+  # Ignore specific files that may contain example/placeholder secrets
+  ignored-paths:
+    - "**/config.template.json"
+    - "**/.env.example"
+    - "**/triage-to-prod.md"
+
+  # Ignore specific known false positives (dev-only placeholder secrets)
+  ignored-matches:
+    # Freqtrade dev config placeholder secrets (already removed from tracking)
+    - name: "freqtrade_local_dev_secret_key_change_in_production"
+      match: "freqtrade_local_dev_secret_key_change_in_production"
+    - name: "freqtrade_local_dev_ws_token"
+      match: "freqtrade_local_dev_ws_token"
+    # Linear API key examples in documentation
+    - name: "lin_api_example"
+      match: "lin_api_xxxxxxxxxxxxx"

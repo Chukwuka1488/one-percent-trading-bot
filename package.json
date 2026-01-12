@@ -7,8 +7,8 @@
   },
   "scripts": {
     "test": "echo \"No tests yet\" && exit 0",
-    "format:check": "prettier --check '**/*.md' --ignore-path .gitignore",
-    "format:fix": "prettier --write '**/*.md' --ignore-path .gitignore"
+    "format:check": "prettier --check '*.md' 'docs/**/*.md' 'ai/**/*.md' '.claude/**/*.md'",
+    "format:fix": "prettier --write '*.md' 'docs/**/*.md' 'ai/**/*.md' '.claude/**/*.md'"
   },
   "repository": {
     "type": "git",

@@ -1,3 +1,8 @@
 .envrc
+.env
 node_modules/
 dist/
+
+# Docker volume data
+.docker/postgres/
+.docker/n8n/

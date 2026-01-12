@@ -94,6 +94,27 @@ format-fix: ## Fix formatting for markdown files
 # -----------------------------------------------------------------------------
 # Build Docker images for containerized deployment
 
+.PHONY: up
+up: ## Start all Docker services
+	@mkdir -p .docker/postgres .docker/n8n
+	docker compose up -d
+
+.PHONY: down
+down: ## Stop all Docker services
+	docker compose down
+
+.PHONY: logs
+logs: ## Tail logs from all services
+	docker compose logs -f
+
+.PHONY: logs-n8n
+logs-n8n: ## Tail n8n logs
+	docker compose logs -f n8n
+
+.PHONY: ps
+ps: ## Show running containers
+	docker compose ps
+
 # .PHONY: docker-build
 # docker-build: ## Build Docker image
 # 	# docker build -t your-app:latest .

@@ -28,6 +28,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Debug config
+        run: |
+          echo "=== commitlint.config.js ==="
+          cat commitlint.config.js
+          echo "=== Git HEAD ==="
+          git log -1 --oneline
+
       - name: Validate PR title
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}

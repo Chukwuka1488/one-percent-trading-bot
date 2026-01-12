@@ -1,3 +1,31 @@
-# Run linting before commit (skip tests for now until test suite is set up)
-# npm test
+#!/usr/bin/env sh
+
+# ==============================================================================
+# PRE-COMMIT HOOK
+# ==============================================================================
+# Runs before each commit to catch issues early:
+# - Secret detection with ggshield
+# - (Future: linting, formatting)
+# ==============================================================================
+
+set -e
+
+# ==============================================================================
+# SECRET DETECTION WITH GGSHIELD
+# ==============================================================================
+# Prevents accidentally committing secrets like API keys, tokens, passwords
+# Install: brew install ggshield (or pip install ggshield)
+# Auth: ggshield auth login
+# ==============================================================================
+
+if command -v ggshield >/dev/null 2>&1; then
+  echo "🔒 Scanning for secrets..."
+  ggshield secret scan pre-commit
+  echo "✓ No secrets detected"
+else
+  echo "⚠️  ggshield not installed - skipping secret scan"
+  echo "   Install with: brew install ggshield"
+  echo "   Then run: ggshield auth login"
+fi
+
 echo "Pre-commit checks passed"

@@ -3,13 +3,17 @@
 # Services:
 #   - n8n: Workflow orchestration (Perplexity → Gemini → Signals)
 #   - postgres: Database for n8n + trading data
+#   - freqtrade: Trading bot framework (dry-run mode)
 #
 # Usage:
-#   docker compose up -d        # Start all services
-#   docker compose logs -f n8n  # View n8n logs
-#   docker compose down         # Stop all services
+#   docker compose up -d              # Start all services
+#   docker compose logs -f n8n        # View n8n logs
+#   docker compose logs -f freqtrade  # View Freqtrade logs
+#   docker compose down               # Stop all services
 #
-# n8n UI: http://localhost:5678
+# UIs:
+#   - n8n: http://localhost:5678
+#   - Freqtrade: http://localhost:8080
 
 services:
   # ==========================================================================
@@ -78,6 +82,25 @@ services:
       - ./ai/tools:/home/node/tools:ro
     ports:
       - "5678:5678"
+
+  # ==========================================================================
+  # Freqtrade - Trading Bot Framework
+  # ==========================================================================
+  # Runs in dry-run mode by default (paper trading)
+  # Docs: https://www.freqtrade.io/en/stable/docker_quickstart/
+  freqtrade:
+    image: freqtradeorg/freqtrade:stable
+    container_name: trading-freqtrade
+    restart: unless-stopped
+    volumes:
+      - ./freqtrade/user_data:/freqtrade/user_data
+    ports:
+      - "127.0.0.1:8080:8080"
+    command: >
+      trade
+      --logfile /freqtrade/user_data/logs/freqtrade.log
+      --config /freqtrade/user_data/config.json
+      --strategy SampleStrategy
 
 # ==========================================================================
 # Volumes - Persistent data storage

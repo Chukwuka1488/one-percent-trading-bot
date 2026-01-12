@@ -111,9 +111,27 @@ logs: ## Tail logs from all services
 logs-n8n: ## Tail n8n logs
 	docker compose logs -f n8n
 
+.PHONY: logs-freqtrade
+logs-freqtrade: ## Tail Freqtrade logs
+	docker compose logs -f freqtrade
+
 .PHONY: ps
 ps: ## Show running containers
 	docker compose ps
+
+.PHONY: trades
+trades: ## Show open Freqtrade trades
+	@curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/status | python3 -c "\
+	import json, sys; \
+	data = json.load(sys.stdin); \
+	print('No open trades') if not data else (\
+	print(f'Open Trades: {len(data)}'), \
+	print('-' * 60), \
+	[print(f\"{t['pair']:12} | Entry: \$${ t['open_rate']:,.2f} | P/L: {t['profit_pct']:.2f}%\") for t in data])"
+
+.PHONY: balance
+balance: ## Show Freqtrade wallet balance
+	@curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/balance | python3 -m json.tool
 
 # .PHONY: docker-build
 # docker-build: ## Build Docker image

@@ -1,7 +1,9 @@
 # =============================================================================
-# COMMITLINT - Validate PR Title and Body
+# COMMITLINT - Validate PR Title
 # =============================================================================
-# PURPOSE: Validates that PR titles and bodies follow conventional commit format
+# PURPOSE: Validates that PR titles follow conventional commit format
+# NOTE: PR body is NOT validated - it's documentation, not a commit message
+#       The PR title becomes the squash commit message
 # =============================================================================
 
 name: Commitlint
@@ -12,7 +14,7 @@ on:
 
 jobs:
   commitlint:
-    name: Validate PR Title and Body
+    name: Validate PR Title
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,19 +33,7 @@ jobs:
       - name: Validate PR title
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
-        run: echo "$PR_TITLE" | npx commitlint
-
-      - name: Validate PR body
-        if: github.event.pull_request.body != ''
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          # Combine title and body as a complete commit message
-          COMMIT_MSG="${PR_TITLE}"
-          if [ -n "$PR_BODY" ]; then
-            COMMIT_MSG="${COMMIT_MSG}
-
-          ${PR_BODY}"
-          fi
-          echo "$COMMIT_MSG" | npx commitlint
+          echo "Validating PR title: $PR_TITLE"
+          echo "$PR_TITLE" | npx commitlint
+          echo "✓ PR title follows conventional commit format"

@@ -1,0 +1,43 @@
+{
+  "name": "Error Alerts",
+  "nodes": [
+    {
+      "parameters": { "events": ["workflow.failed"] },
+      "id": "error-trigger",
+      "name": "On Workflow Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [240, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const err = $json;\nconst wf = err.workflow?.name || 'Unknown';\nconst node = err.execution?.error?.node?.name || 'Unknown';\nconst msg = err.execution?.error?.message || 'No details';\nconst ts = err.execution?.startedAt || new Date().toISOString();\n\nconst message = `🚨 *Workflow Error*\\n\\n📋 Workflow: \\`${wf}\\`\\n🔧 Node: \\`${node}\\`\\n🕐 Time: ${ts}\\n\\n❌ Error:\\n\\`\\`\\`\\n${msg.substring(0, 300)}\\n\\`\\`\\``;\n\nreturn { json: { message, chat_id: process.env.TELEGRAM_CHAT_ID || '' } };"
+      },
+      "id": "format",
+      "name": "Format Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": { "parse_mode": "Markdown" }
+      },
+      "id": "telegram",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [680, 400],
+      "credentials": { "telegramApi": { "id": "telegram-bot", "name": "Telegram Bot" } }
+    }
+  ],
+  "connections": {
+    "On Workflow Error": { "main": [[{ "node": "Format Error", "type": "main", "index": 0 }]] },
+    "Format Error": { "main": [[{ "node": "Send Telegram", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["alerts", "errors"]
+}

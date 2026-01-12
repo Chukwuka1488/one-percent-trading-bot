@@ -1,6 +1,6 @@
 # HAY-11: n8n Local Setup + Docker Environment
 
-**Status:** Ready for Review
+**Status:** Complete ✅
 **Branch:** `feature/hay-11-n8n-docker`
 
 ## Done
@@ -14,12 +14,19 @@
 - [x] Created signals table in database
 - [x] Created workflow JSON (Perplexity → Gemini → Signal)
 - [x] Added Makefile targets (up, down, logs, ps)
+- [x] Imported workflow into n8n UI
+- [x] Configured API credentials in n8n (Header Auth, Query Auth, Postgres)
+- [x] Tested end-to-end pipeline successfully
 
-## Next
+## Credentials Setup
 
-- [ ] Import workflow into n8n UI
-- [ ] Configure API credentials in n8n
-- [ ] Test end-to-end pipeline
+In n8n UI (Credentials):
+
+| Name           | Type        | Config                                        |
+| -------------- | ----------- | --------------------------------------------- |
+| Perplexity API | Header Auth | `Authorization: Bearer <key>`                 |
+| Gemini API     | Query Auth  | `key: <key>`                                  |
+| Trading DB     | Postgres    | Host: `postgres`, Port: `5432`, SSL: Disabled |
 
 ## Commands
 
@@ -52,30 +59,9 @@ open http://localhost:5678
                     └───────────────┘     └─────────────┘
 ```
 
-## n8n UI Setup
-
-1. **Create Credentials** (Settings → Credentials):
-   - **Perplexity API**: HTTP Header Auth
-     - Header: `Authorization`
-     - Value: `Bearer YOUR_PERPLEXITY_KEY`
-   - **Gemini API**: HTTP Query Auth
-     - Param: `key`
-     - Value: `YOUR_GEMINI_KEY`
-   - **Trading DB**: PostgreSQL
-     - Host: `postgres`
-     - Port: `5432`
-     - DB: `trading_bot`
-     - User: `trading`
-     - Pass: `trading_local`
-
-2. **Import Workflow**:
-   - Workflows → Add → Import from File
-   - Select: `ai/workflows/n8n/crypto-sentiment-pipeline.json`
-
-3. **Test**: Click "Test Workflow" in n8n
-
 ## Notes
 
 - PostgreSQL stores n8n data + trading signals
 - Volume data in `.docker/` directory (gitignored)
-- API keys passed via environment variables
+- Signals filtered by confidence >= 0.7 before saving
+- Password: `trading_local_dev` (updated in .env.example)

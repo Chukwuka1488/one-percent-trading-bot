@@ -1,301 +1,287 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with
-code in this repository.
+> **Multi-Terminal Workflow:** This file is optimized for running 5+ Claude Code
+> instances in parallel. Each instance reads these rules. Keep it scannable.
 
-## First Things First
+---
 
-**At the start of each session:**
+## LAWS (Read First, Every Time)
 
-1. Check `ai/docs/shared/progress/` for any in-progress tickets
-2. Read the relevant progress file (e.g., `HAY-5.md`) to see what's done and what's next
-3. Continue from the **Next** section, or ask the user what to work on
-
-**Before ending a session or clearing context:**
-
-1. Update the progress file with completed items and next steps
-2. Commit changes if appropriate
-
-## Project Overview
-
-One Percent Trading Bot - An AI-powered trading bot project focused on
-consistent, sustainable returns. This project uses AI-assisted development
-workflows with Linear integration for ticket management.
-
-## Documentation Index
+These are non-negotiable. If you violate these, update this file so it never happens again.
 
 ```
-CLAUDE.md (root) ← You are here
-├── docs/ai-workflows.md ......... AI workflow documentation
-└── ai/docs/ ..................... Generated documents (research, plans, etc.)
+LAW 1: NEVER commit to main/master. Always use feature branches.
+LAW 2: NEVER commit API keys, secrets, or .env files.
+LAW 3: ALWAYS read existing files before creating new ones.
+LAW 4: ALWAYS run tests before marking work complete.
+LAW 5: ALWAYS update progress files in ai/docs/shared/progress/
+LAW 6: If you change DB schema, update types.ts immediately.
+LAW 7: Use conventional commits: <type>(<scope>): <summary>
+LAW 8: Max 72 chars for commit headers, all lowercase.
 ```
 
-## Directory Structure
+---
+
+## Tech Stack (Memorize This)
+
+| Service       | Tech                      | Port | Directory              |
+| ------------- | ------------------------- | ---- | ---------------------- |
+| Dashboard     | Vite + React + TypeScript | 3000 | `dashboard/`           |
+| Orchestration | n8n (workflow automation) | 5678 | `ai/workflows/n8n/`    |
+| Trading Bot   | Freqtrade (Python)        | 8080 | `freqtrade/`           |
+| Database      | PostgreSQL 16             | 5434 | Docker                 |
+| AI Research   | Perplexity API            | -    | `ai/tools/perplexity/` |
+| AI Analysis   | Gemini API                | -    | `ai/tools/gemini/`     |
+
+---
+
+## Terminal Assignment Guide
+
+When running multiple instances, assign each to a domain:
+
+| Terminal | Focus Area         | Primary Directory   | Key Commands               |
+| -------- | ------------------ | ------------------- | -------------------------- |
+| **T1**   | Dashboard/Frontend | `dashboard/`        | `npm run dev`, `npm test`  |
+| **T2**   | n8n Workflows      | `ai/workflows/n8n/` | `docker compose up n8n`    |
+| **T3**   | Trading Logic      | `freqtrade/`        | `freqtrade test-pairlist`  |
+| **T4**   | AI Tools/Research  | `ai/tools/`         | API integrations           |
+| **T5**   | Tests/Verification | Project root        | `npm test`, `/code-review` |
+
+**Collision Prevention:**
+
+- Before editing a file, check if another terminal might be working on it
+- Use atomic commits per feature/fix
+- Update progress files so other instances know what's done
+
+---
+
+## Style Rules (Strict)
+
+### React/TypeScript (dashboard/)
+
+```typescript
+// ✅ ALWAYS: Functional components, strict TypeScript, Tailwind
+const TradeCard: React.FC<TradeCardProps> = ({ trade }) => {
+  const isProfit = trade.pnl > 0;
+  return <div className={isProfit ? 'text-green-500' : 'text-red-500'}>...</div>;
+};
+
+// ❌ NEVER: Class components, inline styles, any types
+class TradeCard extends React.Component { ... }  // NO
+style={{ color: 'green' }}  // NO
+const data: any = ...  // NO
+```
+
+### Naming Conventions
+
+| Type            | Convention      | Example               |
+| --------------- | --------------- | --------------------- |
+| Components      | PascalCase      | `StatCard.tsx`        |
+| Hooks           | camelCase       | `useWebSocket.ts`     |
+| Utilities       | camelCase       | `formatCurrency.ts`   |
+| Types           | PascalCase      | `Trade`, `Signal`     |
+| Constants       | SCREAMING_SNAKE | `API_BASE_URL`        |
+| Files (general) | kebab-case      | `trading-strategy.py` |
+
+### Atomic Design (dashboard/src/components/)
+
+```
+atoms/        → Button, Input, Icon, Badge, Spinner
+molecules/    → StatCard, NavItem, FormField
+organisms/    → Sidebar, Header, TradeTable, Chart
+templates/    → DashboardLayout, AuthLayout
+```
+
+---
+
+## Verification Hooks
+
+Before completing ANY task, run these checks:
+
+```bash
+# Frontend (dashboard/)
+cd dashboard && npm run lint && npm run typecheck && npm test
+
+# Python (freqtrade/)
+cd freqtrade && pytest
+
+# Full project
+/code-review  # Run before pushing
+```
+
+**Auto-Verify Prompt:** After writing code, tell Claude:
+
+> "Before finishing, run the relevant tests and fix any errors you created."
+
+---
+
+## Slash Commands (Use These)
+
+| Command           | Purpose                    | When to Use                  |
+| ----------------- | -------------------------- | ---------------------------- |
+| `/create-plan`    | Design before implementing | Complex features (Plan Mode) |
+| `/implement-plan` | Execute approved plan      | After plan approval          |
+| `/code-review`    | AI code review             | Before every push            |
+| `/commit`         | Conventional commit        | After verified changes       |
+| `/describe-pr`    | Generate PR description    | Before creating PR           |
+| `/triage-to-prod` | Full automation            | When you want hands-off      |
+
+### Workflow Sequence
+
+```
+1. Shift+Tab x2 → PLAN MODE (design first)
+2. Critique the plan, refine it
+3. Shift+Tab x1 → AUTO-ACCEPT MODE (execute)
+4. Verify → /code-review
+5. Commit → /commit
+```
+
+---
+
+## Progress Tracking
+
+**CRITICAL:** Check and update these files every session.
+
+```
+ai/docs/shared/progress/HAY-XX.md  ← Current ticket progress
+ai/docs/shared/plans/              ← Implementation plans
+ai/docs/research/                  ← Codebase research
+```
+
+**Session Start:**
+
+1. Read `ai/docs/shared/progress/` for in-progress tickets
+2. Continue from the **Next** section
+
+**Session End:**
+
+1. Update progress file with completed items
+2. Add next steps for the next session/terminal
+
+---
+
+## Project Structure
 
 ```
 one-percent-trading-bot/
-├── .claude/                      # AI workflow configuration
-│   ├── commands/                 # Slash commands (/commit, /create-plan, etc.)
-│   ├── agents/                   # Specialized subagents for research/analysis
-│   ├── skills/                   # Complex multi-step workflows
-│   ├── settings.json             # Claude Code settings
+├── .claude/                      # AI workflow config
+│   ├── commands/                 # Slash commands
+│   ├── settings.json             # Claude settings
 │   └── settings.local.json       # Local permissions
 ├── ai/
-│   ├── docs/                     # Generated documents
-│   │   ├── research/             # Research docs from /research-codebase
-│   │   ├── shared/
-│   │   │   ├── plans/            # Implementation plans from /create-plan
-│   │   │   ├── tickets/          # Ticket analysis from /analyze-triage-ticket
-│   │   │   ├── prs/              # PR descriptions from /describe-pr
-│   │   │   └── progress/         # Session progress (check first!)
-│   │   └── triage-to-prod-reports/  # Workflow reports
-│   └── tools/
-│       └── linear/               # Linear CLI for ticket management
-├── docs/
-│   └── ai-workflows.md           # AI workflow documentation
-├── CLAUDE.md                     # This file - project context
-├── Makefile                      # Build/dev commands (templates)
-├── .envrc                        # Environment variables (direnv)
-└── .gitignore
+│   ├── docs/shared/progress/     # ⭐ CHECK THIS FIRST
+│   ├── docs/shared/plans/        # Implementation plans
+│   ├── docs/research/            # Codebase research
+│   ├── tools/linear/             # Linear CLI
+│   ├── tools/gemini/             # Gemini API client
+│   └── workflows/n8n/            # n8n workflows + Docker
+├── dashboard/                    # React frontend
+│   └── src/components/           # Atomic Design
+├── freqtrade/                    # Trading bot config
+├── docker-compose.yml            # Service orchestration
+└── CLAUDE.md                     # ⭐ YOU ARE HERE
 ```
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 One Percent Trading Bot                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │   Dashboard  │  │     n8n      │  │  Freqtrade   │       │
+│  │   (React)    │  │  (Signals)   │  │  (Trading)   │       │
+│  │   :3000      │  │   :5678      │  │   :8080      │       │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘       │
+│         │                 │                 │                │
+│         └─────────────────┼─────────────────┘                │
+│                           ▼                                  │
+│              ┌──────────────────────┐                       │
+│              │     PostgreSQL       │                       │
+│              │       :5434          │                       │
+│              └──────────────────────┘                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
 
 ## Linear Integration
 
-| Setting       | Value                           |
-| ------------- | ------------------------------- |
-| Team Key      | `HAY`                           |
-| Ticket Format | `HAY-XXX`                       |
-| Workspace     | `haykay`                        |
-| API Key       | Loaded via direnv from `.envrc` |
-
-### Linear CLI Usage
-
-**Important:** Always use the wrapper script `./ai/tools/linear/linear` instead of
-running `npx tsx` directly. The wrapper automatically loads environment variables
-from `.envrc` via direnv, which doesn't happen automatically in Claude Code sessions.
+| Setting       | Value     |
+| ------------- | --------- |
+| Team Key      | `HAY`     |
+| Ticket Format | `HAY-XXX` |
+| Workspace     | `haykay`  |
 
 ```bash
-# List your assigned issues
+# Always use the wrapper (loads .envrc automatically)
 ./ai/tools/linear/linear list-issues
-
-# Get issue details
 ./ai/tools/linear/linear get-issue HAY-5
-
-# Create a new issue
-./ai/tools/linear/linear create-issue --team HAY --title "Title" --description "Description"
-
-# Add a comment
-./ai/tools/linear/linear add-comment "Comment text" --issue-id HAY-5
 ```
 
-## AI Workflow Commands
+---
 
-| Command                  | Purpose                      | Output Location           |
-| ------------------------ | ---------------------------- | ------------------------- |
-| `/commit`                | Create conventional commits  | Git history               |
-| `/create-plan`           | Design implementation plans  | `ai/docs/shared/plans/`   |
-| `/implement-plan`        | Execute approved plans       | Code changes              |
-| `/code-review`           | AI-powered code review       | Console output            |
-| `/research-codebase`     | Document existing code       | `ai/docs/research/`       |
-| `/describe-pr`           | Generate PR descriptions     | `ai/docs/shared/prs/`     |
-| `/triage-to-prod`        | Full ticket-to-PR automation | Multiple locations        |
-| `/analyze-triage-ticket` | Deep ticket analysis         | `ai/docs/shared/tickets/` |
-
-## Development Workflow
-
-### Standard Feature Development
-
-1. **Create/Select Linear Ticket**: Use Linear or `/triage-to-prod` to find work
-2. **Research**: Run `/research-codebase` to understand the codebase
-3. **Plan**: Run `/create-plan` to design implementation
-4. **Implement**: Run `/implement-plan` to execute the plan
-5. **Review**: Run `/code-review` before pushing
-6. **Commit**: Run `/commit` for conventional commits
-7. **PR**: Run `/describe-pr` to generate PR description
-
-### Automated Workflow
+## Git Rules
 
 ```bash
-# Full automation from ticket to PR
-/triage-to-prod HAY-5
+# Branch naming
+feature/hay-XX-description
+fix/hay-XX-description
 
-# Or fully autonomous (no prompts)
-/triage-to-prod HAY-5 --autonomous
+# Commit format (STRICT)
+<type>(<scope>): <lowercase summary>  # max 72 chars
+
+# Types: feat, fix, docs, style, refactor, test, chore, ci, perf, build
+
+# Examples
+git commit -m "feat(dashboard): add trade history table"
+git commit -m "fix(n8n): handle rate limit in sentiment workflow"
 ```
 
-## Commit Message Standards
+**NEVER:**
 
-All commits must follow conventional commit format:
+- `git push --force` to main
+- `--no-verify` to skip hooks
+- Commit multiple unrelated changes together
 
-```
-<type>(<scope>): <summary in lowercase>
-
-Optional body with line length ≤ 72 characters.
-```
-
-**Format Rules:**
-
-- Header max: 72 chars (prefer 50)
-- Body wrap: 72 chars
-- Type, scope, and summary: all lowercase
-- Summary must not start with uppercase
-
-**Types:** feat, fix, docs, style, refactor, test, chore, ci, perf, build
-
-**Scopes:** TBD as project grows (e.g., api, trading, data, ui)
-
-**Examples:**
-
-```
-✅ feat(api): add perplexity integration (35 chars)
-✅ fix(trading): handle rate limit errors (40 chars)
-❌ feat(api): Add Perplexity integration - WRONG (uppercase)
-❌ feat(api): add comprehensive perplexity api integration with error handling (76 chars) - TOO LONG
-```
-
-## Git Branch Protection
-
-**Never commit directly to `main` or `master`!**
-
-All development MUST occur on feature branches.
-
-**Branch Naming:**
-
-- Feature: `feature/description` or `yourname/hay-XX-description`
-- Bug fix: `fix/description`
-
-**Workflow:**
-
-```bash
-git checkout -b feature/hay-5-perplexity
-# ... make changes ...
-git push -u origin feature/hay-5-perplexity
-# Create PR via GitHub or /describe-pr
-```
+---
 
 ## Environment Variables
 
 ```bash
 # Required (loaded via direnv)
-LINEAR_API_KEY=           # Linear API key (personal account)
+LINEAR_API_KEY=           # Linear API
+GEMINI_API_KEY=           # Gemini AI
+PERPLEXITY_API_KEY=       # Perplexity research
 
-# Future - add as needed
-PERPLEXITY_API_KEY=       # Perplexity AI for research (HAY-5)
-# Trading API keys
-# Database credentials
+# Services (in docker-compose)
+POSTGRES_*                # Database
+N8N_*                     # n8n config
 ```
 
-## Technical Stack
+---
 
-> Update this section as you choose your tech stack
+## Quick Fixes (When Claude Messes Up)
 
-| Component   | Technology                       |
-| ----------- | -------------------------------- |
-| Language    | TBD                              |
-| Framework   | TBD                              |
-| Database    | TBD                              |
-| AI Research | Perplexity API (planned - HAY-5) |
-| Trading API | TBD                              |
+| Problem                       | Fix                                       |
+| ----------------------------- | ----------------------------------------- |
+| Created duplicate component   | Delete it, reuse existing from atoms/     |
+| Wrong import path             | Check actual file structure with `ls`     |
+| Committed to main             | `git reset --soft HEAD~1`, create branch  |
+| Forgot to run tests           | Run now, fix failures before continuing   |
+| Types out of sync with schema | Update `types.ts` to match current schema |
 
-## File Naming Conventions
+**Meta-Fix:** If a mistake keeps happening, add a new LAW to this file.
 
-| Type      | Convention               | Example               |
-| --------- | ------------------------ | --------------------- |
-| General   | lowercase with hyphens   | `trading-strategy.py` |
-| Classes   | PascalCase               | `TradingStrategy`     |
-| Functions | camelCase or snake_case  | `calculateProfit`     |
-| Tests     | `*_test.*` or `*.test.*` | `strategy_test.py`    |
-| Markdown  | kebab-case               | `api-design.md`       |
+---
 
-## Coding Standards
+## Coding Principles (Brief)
 
-### Core Principles
-
-All code must follow these fundamental software engineering principles:
-
-**KISS (Keep It Simple, Stupid)**
-
-- Prefer simple, straightforward solutions over clever ones
-- If code needs extensive comments to explain, simplify it
-
-**DRY (Don't Repeat Yourself)**
-
-- Extract repeated code into reusable functions/modules
-- Single source of truth for business logic
-
-**YAGNI (You Aren't Gonna Need It)**
-
-- Don't build features until they're actually needed
-- Avoid premature optimization and over-engineering
-
-**SOLID Principles**
-
-- **S**ingle Responsibility: One class/function = one job
-- **O**pen/Closed: Open for extension, closed for modification
-- **L**iskov Substitution: Subtypes must be substitutable for base types
-- **I**nterface Segregation: Many specific interfaces > one general interface
-- **D**ependency Inversion: Depend on abstractions, not concretions
-
-### Clean Code Guidelines
-
-- Write clean, readable code with meaningful names
-- Keep functions small and focused (single responsibility)
-- Handle errors explicitly - don't swallow exceptions
-- Write tests for critical functionality
-- Document complex logic with comments
-- Use consistent formatting and style
-- Limit function parameters (max 3-4 ideally)
-- Avoid deep nesting (max 2-3 levels)
-- Return early to reduce complexity
-
-### Security
-
-- Never commit API keys or secrets
-- Use environment variables for sensitive data
-- Validate all external inputs
-- Follow OWASP guidelines for web interfaces
-
-## Dos and Don'ts
-
-### Do
-
-- ✅ Create Linear tickets before starting work
-- ✅ Use `/create-plan` before implementing complex features
-- ✅ Run `/code-review` before pushing significant changes
-- ✅ Keep commits atomic and well-described
-- ✅ Update documentation when adding features
-
-### Don't
-
-- ❌ Commit directly to main/master
-- ❌ Commit API keys or secrets
-- ❌ Skip code review for significant changes
-- ❌ Use `--no-verify` to bypass git hooks
-- ❌ Mix unrelated changes in one commit
-
-## Quick Reference
-
-**Need help with...**
-
-- AI workflow commands? → `docs/ai-workflows.md`
-- Linear CLI? → `ai/tools/linear/README.md`
-- Research documents? → `ai/docs/research/`
-- Implementation plans? → `ai/docs/shared/plans/`
-- Ticket analysis? → `ai/docs/shared/tickets/`
-
-**Common Commands:**
-
-```bash
-# Check Linear connection
-./ai/tools/linear/linear list-issues
-
-# Start work on a ticket
-/triage-to-prod HAY-5
-
-# Or manual workflow
-/research-codebase
-/create-plan
-/implement-plan
-/code-review
-/commit
-```
+- **KISS:** Simple > Clever
+- **DRY:** Extract repeated code
+- **YAGNI:** Don't build what you don't need yet
+- **Test:** Write tests for critical paths
+- **Security:** Never expose secrets, validate inputs

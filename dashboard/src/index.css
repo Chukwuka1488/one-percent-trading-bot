@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Base styles */
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-charcoal text-white font-sans m-0;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-charcoal-300;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-charcoal-50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/20;
+  }
+}
+
+/* Component utilities */
+@layer components {
+  /* Glassmorphism card */
+  .glass-card {
+    @apply bg-surface-overlay backdrop-blur-md border border-border rounded-xl shadow-glass;
+  }
+
+  .glass-card-sm {
+    @apply bg-surface-overlay backdrop-blur-sm border border-border rounded-lg shadow-glass-sm;
+  }
+
+  /* Profit/Loss indicators */
+  .profit-indicator {
+    @apply text-profit flex items-center gap-1;
+  }
+
+  .loss-indicator {
+    @apply text-loss flex items-center gap-1;
+  }
+
+  /* Sticky elements */
+  .sticky-header {
+    @apply sticky top-0 z-50 backdrop-blur-md bg-charcoal/80 border-b border-border;
+  }
+
+  .sticky-sidebar {
+    @apply sticky top-0 h-screen overflow-y-auto;
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Focus visible */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-profit/50 focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal;
+  }
+
+  /* Transitions */
+  .transition-default {
+    @apply transition-all duration-200 ease-in-out;
+  }
+}

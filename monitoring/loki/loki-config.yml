@@ -19,3 +19,9 @@ schema_config:
       index:
         prefix: index_
         period: 24h
+
+ruler:
+  storage:
+    type: local
+    local:
+      directory: /loki/rules

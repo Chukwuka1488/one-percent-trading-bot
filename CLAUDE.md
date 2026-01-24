@@ -21,7 +21,7 @@ LAW 8: Max 72 chars for commit headers, all lowercase.
 LAW 9: For HAY tickets, evaluate .claude/ralph-decision.md and output decision log.
 LAW 10: Check ai/docs/shared/SPRINT.md for priority order before picking tickets.
 LAW 11: ALWAYS research and plan BEFORE implementation. No exceptions.
-LAW 12: ALWAYS push ticket claim commits IMMEDIATELY so other worktrees can see.
+LAW 12: ALWAYS create a DRAFT PR immediately after claiming a ticket.
 ```
 
 ---

@@ -31,7 +31,7 @@ If Linear CLI unavailable, check:
 
 ---
 
-### Step 2: Claim Ticket (CRITICAL - Do This Immediately!)
+### Step 2: Claim Ticket & Create Draft PR (CRITICAL - Do This Immediately!)
 
 **Other worktrees need to know what you're working on BEFORE you start.**
 
@@ -48,14 +48,38 @@ If Linear CLI unavailable, check:
 
 3. Create progress file `ai/docs/shared/progress/HAY-XX.md`
 
-4. **COMMIT AND PUSH IMMEDIATELY:**
+4. **COMMIT, PUSH, AND CREATE DRAFT PR:**
+
    ```bash
    git add ai/docs/shared/SPRINT.md ai/docs/shared/progress/HAY-XX.md
    git commit -m "chore(sprint): claim hay-XX for worktree-N"
    git push -u origin feature/hay-XX-description
    ```
 
-**WHY:** Other worktrees fetch/pull to see claimed tickets. If you don't push, they can't see your claim and may duplicate work.
+5. **CREATE DRAFT PR IMMEDIATELY:**
+
+   ```bash
+   gh pr create --draft --title "feat(scope): hay-XX description" --body "$(cat <<'EOF'
+   ## Summary
+   - Claiming HAY-XX for WORKTREE-N
+   - [Brief description of ticket]
+
+   ## Progress
+   - [ ] Research complete
+   - [ ] Plan approved
+   - [ ] Implementation done
+   - [ ] Code review passed
+   - [ ] Ready for review
+   EOF
+   )"
+   ```
+
+**WHY:**
+
+- Draft PRs are visible in GitHub UI to all team members
+- Other worktrees check `gh pr list` before claiming tickets
+- PR shows progress checklist
+- More visible than just branches
 
 ---
 
@@ -177,7 +201,7 @@ Copy this for each ticket:
 ## HAY-XX Workflow Checklist
 
 - [ ] Step 1: Fetch ticket details
-- [ ] Step 2: Claim ticket (update SPRINT.md, commit, PUSH)
+- [ ] Step 2: Claim ticket (update SPRINT.md, commit, PUSH, CREATE DRAFT PR)
 - [ ] Step 3: /research-codebase
 - [ ] Step 4: Review research (no gaps)
 - [ ] Step 5: /create-plan
@@ -209,7 +233,8 @@ Copy this for each ticket:
 
 ## Critical Rules
 
-1. **ALWAYS push after claiming** - Other worktrees can't see unpushed commits
-2. **Check SPRINT.md before claiming** - Ensure ticket isn't already claimed
+1. **ALWAYS create draft PR after claiming** - Other worktrees check `gh pr list`
+2. **Check `gh pr list` before claiming** - Ensure ticket isn't already claimed
 3. **Update "Files Being Edited"** - Prevents merge conflicts
-4. **Clear tracking on completion** - Free up the ticket for others to verify
+4. **Mark PR ready for review on completion** - Triggers code review process
+5. **Update PR description** - Keep progress checklist current

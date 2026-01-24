@@ -72,7 +72,7 @@ HAY-12 (Strategy) ───────────┼─→ HAY-13 (Risk Manage
 | Worktree      | Purpose                  | Current Ticket | Branch                                     |
 | ------------- | ------------------------ | -------------- | ------------------------------------------ |
 | WORKTREE-MAIN | Reconciliation & testing | -              | `main` (always)                            |
-| `WORKTREE-1/` | Worker                   | -              | -                                          |
+| `WORKTREE-1/` | Worker                   | HAY-12         | `feature/hay-12-basic-trading-strategy`    |
 | `WORKTREE-2/` | Worker                   | HAY-37         | `feature/hay-37-exchange-migration-kraken` |
 | `WORKTREE-3/` | Worker                   | -              | -                                          |
 | `WORKTREE-4/` | Worker                   | -              | -                                          |

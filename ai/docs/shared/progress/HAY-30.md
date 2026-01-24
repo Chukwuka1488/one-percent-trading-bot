@@ -1,6 +1,6 @@
 # HAY-30: Layout Templates
 
-**Status:** Active
+**Status:** Complete
 **Worktree:** WORKTREE-1
 **Branch:** `feature/hay-30-layout-templates`
 **Started:** 2026-01-24
@@ -16,12 +16,14 @@ Complete the layout templates for the dashboard following atomic design principl
 ## Completed
 
 - [x] `DashboardLayout` - Main dashboard layout with sidebar and header
+- [x] `AuthLayout` - Authentication pages layout (login, register, etc.)
+- [x] Export both templates from barrel file
 
 ---
 
 ## In Progress
 
-- [ ] `AuthLayout` - Authentication pages layout (login, register, etc.)
+None - all items complete.
 
 ---
 

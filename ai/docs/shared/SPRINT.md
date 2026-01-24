@@ -8,19 +8,19 @@
 
 ## Current Sprint (Priority Order)
 
-| #   | Ticket | Title                            | Status  | Blocker        |
-| --- | ------ | -------------------------------- | ------- | -------------- |
-| 1   | HAY-30 | Layout Templates                 | Active  | None           |
-| 2   | HAY-12 | Basic Trading Strategy           | Active  | None           |
-| 3   | HAY-13 | Risk Management: Position Sizing | Pending | HAY-12         |
-| 4   | HAY-14 | Backtesting Pipeline             | Pending | HAY-12         |
-| 5   | HAY-9  | Exchange Paper Trading Setup     | Pending | HAY-12         |
-| 6   | HAY-25 | Database & Trade Persistence     | Pending | None           |
-| 7   | HAY-21 | Emergency Kill Switch            | Pending | HAY-12         |
-| 8   | HAY-22 | Error Recovery & Reconnection    | Pending | HAY-21         |
-| 9   | HAY-24 | Live Trading Activation          | Pending | HAY-9, HAY-13  |
-| 10  | HAY-15 | VPS Infrastructure Setup         | Pending | None           |
-| 11  | HAY-16 | Production Deployment            | Pending | HAY-15, HAY-24 |
+| #   | Ticket | Title                            | Status   | Blocker        |
+| --- | ------ | -------------------------------- | -------- | -------------- |
+| 1   | HAY-30 | Layout Templates                 | Complete | None           |
+| 2   | HAY-12 | Basic Trading Strategy           | Active   | None           |
+| 3   | HAY-13 | Risk Management: Position Sizing | Pending  | HAY-12         |
+| 4   | HAY-14 | Backtesting Pipeline             | Pending  | HAY-12         |
+| 5   | HAY-9  | Exchange Paper Trading Setup     | Pending  | HAY-12         |
+| 6   | HAY-25 | Database & Trade Persistence     | Pending  | None           |
+| 7   | HAY-21 | Emergency Kill Switch            | Pending  | HAY-12         |
+| 8   | HAY-22 | Error Recovery & Reconnection    | Pending  | HAY-21         |
+| 9   | HAY-24 | Live Trading Activation          | Pending  | HAY-9, HAY-13  |
+| 10  | HAY-15 | VPS Infrastructure Setup         | Pending  | None           |
+| 11  | HAY-16 | Production Deployment            | Pending  | HAY-15, HAY-24 |
 
 ---
 
@@ -54,10 +54,9 @@
 
 > **Check before editing any file to avoid conflicts!**
 
-| File                                                | Worktree   | Action   |
-| --------------------------------------------------- | ---------- | -------- |
-| `dashboard/src/components/templates/AuthLayout.tsx` | WORKTREE-1 | Creating |
-| `dashboard/src/components/templates/index.ts`       | WORKTREE-1 | Updating |
+| File | Worktree | Action |
+| ---- | -------- | ------ |
+| -    | -        | -      |
 
 **Rules:**
 

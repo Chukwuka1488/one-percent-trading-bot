@@ -1,0 +1,103 @@
+# Sprint Priority
+
+> **Source of truth** for ticket priority. Check this before starting work.
+
+**Maintenance:** When creating new tickets, add them to the table below with correct Blocker column.
+
+---
+
+## Current Sprint (Priority Order)
+
+| #   | Ticket | Title                            | Status  | Blocker        |
+| --- | ------ | -------------------------------- | ------- | -------------- |
+| 1   | HAY-30 | Layout Templates (partial)       | Partial | None           |
+| 2   | HAY-12 | Basic Trading Strategy           | Active  | None           |
+| 3   | HAY-13 | Risk Management: Position Sizing | Pending | HAY-12         |
+| 4   | HAY-14 | Backtesting Pipeline             | Pending | HAY-12         |
+| 5   | HAY-9  | Exchange Paper Trading Setup     | Pending | HAY-12         |
+| 6   | HAY-25 | Database & Trade Persistence     | Pending | None           |
+| 7   | HAY-21 | Emergency Kill Switch            | Pending | HAY-12         |
+| 8   | HAY-22 | Error Recovery & Reconnection    | Pending | HAY-21         |
+| 9   | HAY-24 | Live Trading Activation          | Pending | HAY-9, HAY-13  |
+| 10  | HAY-15 | VPS Infrastructure Setup         | Pending | None           |
+| 11  | HAY-16 | Production Deployment            | Pending | HAY-15, HAY-24 |
+
+---
+
+## Completed (This Sprint)
+
+| Ticket | Title                     | Merged   |
+| ------ | ------------------------- | -------- |
+| HAY-31 | Freqtrade API Integration | PR ready |
+| HAY-29 | Organism Components       | Complete |
+| HAY-28 | Molecule Components       | Complete |
+| HAY-27 | Atom Components           | Complete |
+| HAY-26 | Dashboard UI Setup        | Merged   |
+
+---
+
+## Worktree Assignment
+
+| Worktree  | Purpose                  | Current Ticket | Branch          |
+| --------- | ------------------------ | -------------- | --------------- |
+| Base repo | Reconciliation & testing | -              | `main` (always) |
+| `dev-1/`  | Worker                   | -              | -               |
+| `dev-2/`  | Worker                   | -              | -               |
+| `dev-3/`  | Worker                   | -              | -               |
+| `dev-4/`  | Worker                   | -              | -               |
+
+**Update this table when starting a ticket** to prevent duplicate work.
+
+---
+
+## Files Being Edited
+
+> **Check before editing any file to avoid conflicts!**
+
+| File | Worktree | Action |
+| ---- | -------- | ------ |
+| -    | -        | -      |
+
+**Rules:**
+
+- Add your file here before starting edits
+- Remove when done (committed)
+- If file is listed, coordinate with that worktree first
+
+---
+
+## How to Pick Next Ticket
+
+```
+1. Check Worktree Assignment table - find your worktree (dev-1, dev-2, etc.)
+2. If your worktree has a ticket, continue that work
+3. If empty, pick highest priority from table with Status: Pending
+4. Check Blocker column - skip if blocker not complete
+5. Update BOTH tables:
+   - Sprint Priority: Status → "Active"
+   - Worktree Assignment: Your ticket + branch
+6. Run Ralph decision matrix (.claude/ralph-decision.md)
+7. Create feature branch and start work
+```
+
+### When Finishing a Ticket
+
+```
+1. Commit and push to remote
+2. Create PR (or merge if approved)
+3. Update Sprint Priority: Status → "Complete"
+4. Clear Worktree Assignment row (set ticket + branch to "-")
+5. Pull main, pick next ticket
+```
+
+---
+
+## Status Legend
+
+| Status   | Meaning                      |
+| -------- | ---------------------------- |
+| Active   | Currently being worked on    |
+| Pending  | Ready to start (no blockers) |
+| Blocked  | Waiting on another ticket    |
+| Partial  | Started but incomplete       |
+| Complete | Done, PR ready or merged     |

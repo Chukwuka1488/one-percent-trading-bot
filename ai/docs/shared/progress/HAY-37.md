@@ -14,22 +14,22 @@ Binance is restricted in the US. Kraken is officially supported by Freqtrade and
 
 ## Acceptance Criteria
 
-- [ ] Update config.template.json for Kraken-compatible settings
-- [ ] Change stake_currency from USDT to USD
-- [ ] Update trading pair format (BTC/USD instead of BTC/USDT)
-- [ ] Update .env.example with Kraken environment variables
-- [ ] Update generate-freqtrade-config.sh for Kraken
-- [ ] Document Kraken-specific configuration requirements
+- [x] Update config.template.json for Kraken-compatible settings
+- [x] Change stake_currency from USDT to USD
+- [x] Update trading pair format (BTC/USD instead of BTC/USDT)
+- [x] Update .env.example with Kraken environment variables
+- [x] Update generate-freqtrade-config.sh for Kraken
+- [x] Document Kraken-specific configuration requirements
 
 ## Workflow Checklist
 
 - [x] Step 1: Fetch ticket details
 - [x] Step 2: Claim ticket (update SPRINT.md, commit, PUSH, CREATE DRAFT PR)
-- [ ] Step 3: /research-codebase
-- [ ] Step 4: Review research (no gaps)
-- [ ] Step 5: /create-plan
-- [ ] Step 6: Review plan (user approved)
-- [ ] Step 7: /implement-plan
+- [x] Step 3: /research-codebase
+- [x] Step 4: Review research (no gaps)
+- [x] Step 5: /create-plan
+- [x] Step 6: Review plan (user approved)
+- [x] Step 7: /implement-plan
 - [ ] Step 8: /code-review (all issues fixed)
 - [ ] Step 9: /commit
 - [ ] Step 10: Update progress files and PUSH

@@ -84,11 +84,9 @@ HAY-12 (Strategy) ───────────┼─→ HAY-13 (Risk Manage
 
 > **Check before editing any file to avoid conflicts!**
 
-| File                                     | Worktree   | Action                  |
-| ---------------------------------------- | ---------- | ----------------------- |
-| freqtrade/user_data/config.template.json | WORKTREE-2 | Modify (Kraken config)  |
-| .env.example                             | WORKTREE-2 | Modify (Kraken vars)    |
-| scripts/generate-freqtrade-config.sh     | WORKTREE-2 | Modify (Kraken support) |
+| File | Worktree | Action |
+| ---- | -------- | ------ |
+| -    | -        | -      |
 
 **Rules:**
 

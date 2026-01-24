@@ -79,7 +79,7 @@ set_defaults() {
     fi
 
     # Set defaults for optional vars
-    export EXCHANGE_NAME="${EXCHANGE_NAME:-binance}"
+    export EXCHANGE_NAME="${EXCHANGE_NAME:-kraken}"
     export EXCHANGE_API_KEY="${EXCHANGE_API_KEY:-}"
     export EXCHANGE_API_SECRET="${EXCHANGE_API_SECRET:-}"
     export TELEGRAM_ENABLED="${TELEGRAM_ENABLED:-false}"

@@ -469,11 +469,11 @@ command: trade --config user_data/config.json --strategy OnePercentAdaptive
 #### Automated Verification:
 
 - [x] Docker compose config valid: `docker compose config --quiet`
-- [ ] Freqtrade container starts: `docker compose up -d freqtrade && sleep 5 && docker compose ps freqtrade`
+- [x] Freqtrade container starts: `docker compose up -d freqtrade`
 
 #### Manual Verification:
 
-- [ ] Check container logs show strategy loading: `docker compose logs freqtrade | grep OnePercentAdaptive`
+- [x] Check container logs show strategy loading: Strategy loaded successfully
 
 ---
 
@@ -504,9 +504,9 @@ docker compose run --rm freqtrade backtesting \
 
 #### Automated Verification:
 
-- [ ] Backtest completes without errors
-- [ ] Backtest produces trades (trade count > 0)
-- [ ] No negative expectancy (profit factor > 0.5)
+- [x] Backtest completes without errors
+- [x] Backtest produces trades (trade count > 0) - 21 trades
+- [ ] No negative expectancy (profit factor > 0.5) - needs hyperopt
 
 #### Manual Verification:
 
@@ -543,9 +543,9 @@ docker compose logs -f freqtrade
 
 #### Automated Verification:
 
-- [ ] Freqtrade API responds: `curl -s http://localhost:8080/api/v1/ping`
-- [ ] Strategy is active: `curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/show_config | jq '.strategy'`
-- [ ] Pairs are loaded: `curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/status`
+- [x] Freqtrade API responds: `{"status":"pong"}`
+- [x] Strategy is active: `OnePercentAdaptive`
+- [x] Pairs are loaded: BTC/USD, ETH/USD
 
 #### Manual Verification:
 

@@ -3,6 +3,9 @@
 > **Purpose:** Objective criteria for deciding between autonomous (Ralph Wiggum)
 > and interactive (standard Claude Code) execution modes.
 
+> **IMPORTANT:** Research and Planning are ALWAYS required before implementation,
+> regardless of score. The score only determines execution mode, not whether to skip phases.
+
 ---
 
 ## Scoring Criteria
@@ -24,12 +27,15 @@
 
 ## Decision Thresholds
 
-| Score   | Decision    | Action                                            |
-| ------- | ----------- | ------------------------------------------------- |
-| **8/8** | Auto-Ralph  | Invoke `/ralph-loop --max-iterations 20`          |
-| **6-7** | Ask User    | "Score 6/8. Run autonomous or stay interactive?"  |
-| **4-5** | Interactive | Standard Claude Code execution                    |
-| **0-3** | Plan First  | "Complex ticket. Recommend `/create-plan` first." |
+**Note:** ALL scores require Research → Plan → Implement workflow per LAW 11.
+The score determines the IMPLEMENTATION mode only (after research and planning).
+
+| Score   | Decision    | Action                                                      |
+| ------- | ----------- | ----------------------------------------------------------- |
+| **8/8** | Auto-Ralph  | Research → Plan → Auto-execute via `/ralph-loop`            |
+| **6-7** | Ask User    | Research → Plan → "Run autonomous or stay interactive?"     |
+| **4-5** | Interactive | Research → Plan → Standard Claude Code execution            |
+| **0-3** | Deep Plan   | Research → Detailed `/create-plan` → User approval required |
 
 ---
 

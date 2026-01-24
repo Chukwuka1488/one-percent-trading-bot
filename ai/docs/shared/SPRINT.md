@@ -8,19 +8,19 @@
 
 ## Current Sprint (Priority Order)
 
-| #   | Ticket | Title                            | Status  | Blocker        |
-| --- | ------ | -------------------------------- | ------- | -------------- |
-| 1   | HAY-30 | Layout Templates (partial)       | Partial | None           |
-| 2   | HAY-12 | Basic Trading Strategy           | Active  | None           |
-| 3   | HAY-13 | Risk Management: Position Sizing | Pending | HAY-12         |
-| 4   | HAY-14 | Backtesting Pipeline             | Pending | HAY-12         |
-| 5   | HAY-9  | Exchange Paper Trading Setup     | Pending | HAY-12         |
-| 6   | HAY-25 | Database & Trade Persistence     | Pending | None           |
-| 7   | HAY-21 | Emergency Kill Switch            | Pending | HAY-12         |
-| 8   | HAY-22 | Error Recovery & Reconnection    | Pending | HAY-21         |
-| 9   | HAY-24 | Live Trading Activation          | Pending | HAY-9, HAY-13  |
-| 10  | HAY-15 | VPS Infrastructure Setup         | Pending | None           |
-| 11  | HAY-16 | Production Deployment            | Pending | HAY-15, HAY-24 |
+| #   | Ticket | Title                            | Status   | Blocker        |
+| --- | ------ | -------------------------------- | -------- | -------------- |
+| 1   | HAY-30 | Layout Templates                 | Complete | None           |
+| 2   | HAY-12 | Basic Trading Strategy           | Active   | None           |
+| 3   | HAY-13 | Risk Management: Position Sizing | Pending  | HAY-12         |
+| 4   | HAY-14 | Backtesting Pipeline             | Pending  | HAY-12         |
+| 5   | HAY-9  | Exchange Paper Trading Setup     | Pending  | HAY-12         |
+| 6   | HAY-25 | Database & Trade Persistence     | Pending  | None           |
+| 7   | HAY-21 | Emergency Kill Switch            | Pending  | HAY-12         |
+| 8   | HAY-22 | Error Recovery & Reconnection    | Pending  | HAY-21         |
+| 9   | HAY-24 | Live Trading Activation          | Pending  | HAY-9, HAY-13  |
+| 10  | HAY-15 | VPS Infrastructure Setup         | Pending  | None           |
+| 11  | HAY-16 | Production Deployment            | Pending  | HAY-15, HAY-24 |
 
 ---
 
@@ -38,13 +38,13 @@
 
 ## Worktree Assignment
 
-| Worktree  | Purpose                  | Current Ticket | Branch          |
-| --------- | ------------------------ | -------------- | --------------- |
-| Base repo | Reconciliation & testing | -              | `main` (always) |
-| `dev-1/`  | Worker                   | -              | -               |
-| `dev-2/`  | Worker                   | -              | -               |
-| `dev-3/`  | Worker                   | -              | -               |
-| `dev-4/`  | Worker                   | -              | -               |
+| Worktree      | Purpose                  | Current Ticket | Branch                            |
+| ------------- | ------------------------ | -------------- | --------------------------------- |
+| WORKTREE-MAIN | Reconciliation & testing | -              | `main` (always)                   |
+| `WORKTREE-1/` | Worker                   | HAY-30         | `feature/hay-30-layout-templates` |
+| `WORKTREE-2/` | Worker                   | -              | -                                 |
+| `WORKTREE-3/` | Worker                   | -              | -                                 |
+| `WORKTREE-4/` | Worker                   | -              | -                                 |
 
 **Update this table when starting a ticket** to prevent duplicate work.
 

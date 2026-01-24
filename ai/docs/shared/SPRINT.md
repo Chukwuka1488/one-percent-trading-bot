@@ -10,7 +10,7 @@
 
 | #   | Ticket | Title                            | Status  | Blocker        |
 | --- | ------ | -------------------------------- | ------- | -------------- |
-| 1   | HAY-30 | Layout Templates (partial)       | Partial | None           |
+| 1   | HAY-30 | Layout Templates                 | Active  | None           |
 | 2   | HAY-12 | Basic Trading Strategy           | Active  | None           |
 | 3   | HAY-13 | Risk Management: Position Sizing | Pending | HAY-12         |
 | 4   | HAY-14 | Backtesting Pipeline             | Pending | HAY-12         |
@@ -38,13 +38,13 @@
 
 ## Worktree Assignment
 
-| Worktree  | Purpose                  | Current Ticket | Branch          |
-| --------- | ------------------------ | -------------- | --------------- |
-| Base repo | Reconciliation & testing | -              | `main` (always) |
-| `dev-1/`  | Worker                   | -              | -               |
-| `dev-2/`  | Worker                   | -              | -               |
-| `dev-3/`  | Worker                   | -              | -               |
-| `dev-4/`  | Worker                   | -              | -               |
+| Worktree      | Purpose                  | Current Ticket | Branch                            |
+| ------------- | ------------------------ | -------------- | --------------------------------- |
+| WORKTREE-MAIN | Reconciliation & testing | -              | `main` (always)                   |
+| `WORKTREE-1/` | Worker                   | HAY-30         | `feature/hay-30-layout-templates` |
+| `WORKTREE-2/` | Worker                   | -              | -                                 |
+| `WORKTREE-3/` | Worker                   | -              | -                                 |
+| `WORKTREE-4/` | Worker                   | -              | -                                 |
 
 **Update this table when starting a ticket** to prevent duplicate work.
 
@@ -54,9 +54,10 @@
 
 > **Check before editing any file to avoid conflicts!**
 
-| File | Worktree | Action |
-| ---- | -------- | ------ |
-| -    | -        | -      |
+| File                                                | Worktree   | Action   |
+| --------------------------------------------------- | ---------- | -------- |
+| `dashboard/src/components/templates/AuthLayout.tsx` | WORKTREE-1 | Creating |
+| `dashboard/src/components/templates/index.ts`       | WORKTREE-1 | Updating |
 
 **Rules:**
 

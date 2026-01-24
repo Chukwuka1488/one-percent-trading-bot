@@ -20,6 +20,7 @@ LAW 7: Use conventional commits: <type>(<scope>): <summary>
 LAW 8: Max 72 chars for commit headers, all lowercase.
 LAW 9: For HAY tickets, evaluate .claude/ralph-decision.md and output decision log.
 LAW 10: Check ai/docs/shared/SPRINT.md for priority order before picking tickets.
+LAW 11: ALWAYS research and plan BEFORE implementation. No exceptions.
 ```
 
 ---
@@ -214,26 +215,81 @@ cd freqtrade && pytest
 
 ---
 
-## Slash Commands (Use These)
+## Mandatory Workflow: Research → Plan → Implement
 
-| Command           | Purpose                    | When to Use                  |
-| ----------------- | -------------------------- | ---------------------------- |
-| `/create-plan`    | Design before implementing | Complex features (Plan Mode) |
-| `/implement-plan` | Execute approved plan      | After plan approval          |
-| `/code-review`    | AI code review             | Before every push            |
-| `/commit`         | Conventional commit        | After verified changes       |
-| `/describe-pr`    | Generate PR description    | Before creating PR           |
-| `/triage-to-prod` | Full automation            | When you want hands-off      |
+**THIS IS NON-NEGOTIABLE. Every ticket follows this sequence. USE THE SLASH COMMANDS.**
 
-### Workflow Sequence
+### Phase 1: Research (REQUIRED) - Use `/research-codebase`
+
+Before ANY implementation, run the research command:
+
+```bash
+/research-codebase
+```
+
+This command will:
+
+1. Read existing code in the target area
+2. Identify patterns to follow
+3. Check for dependencies and impacts
+4. Document findings in `ai/docs/shared/research/YYYY-MM-DD-HAY-XX-description.md`
+
+### Phase 2: Plan (REQUIRED) - Use `/create-plan`
+
+After research, create a plan:
+
+```bash
+/create-plan
+```
+
+This command will:
+
+1. Create plan in `ai/docs/shared/plans/HAY-XX.md`
+2. List specific files to create/modify
+3. Define acceptance criteria
+4. Present for user approval
+
+### Phase 3: Implement - Use `/implement-plan`
+
+Only after research AND planning are complete:
+
+```bash
+/implement-plan
+```
+
+This command will:
+
+1. Execute the approved plan
+2. Follow existing patterns discovered in research
+3. Run verification commands
+4. Update progress file
+
+---
+
+## Slash Commands (MUST USE)
+
+| Command              | Purpose                    | When to Use                       |
+| -------------------- | -------------------------- | --------------------------------- |
+| `/research-codebase` | Research before planning   | **EVERY ticket** (first step)     |
+| `/create-plan`       | Design before implementing | **EVERY ticket** (after research) |
+| `/implement-plan`    | Execute approved plan      | After plan approval               |
+| `/code-review`       | AI code review             | Before every push                 |
+| `/commit`            | Conventional commit        | After verified changes            |
+| `/describe-pr`       | Generate PR description    | Before creating PR                |
+| `/triage-to-prod`    | Full automation            | When you want hands-off           |
+
+### Workflow Sequence (MANDATORY)
 
 ```
-1. Shift+Tab x2 → PLAN MODE (design first)
-2. Critique the plan, refine it
-3. Shift+Tab x1 → AUTO-ACCEPT MODE (execute)
-4. Verify → /code-review
-5. Commit → /commit
+1. /research-codebase → Document existing code, identify patterns
+2. /create-plan       → Create implementation plan with acceptance criteria
+3. User Approval      → User reviews and approves plan
+4. /implement-plan    → Execute the approved plan
+5. /code-review       → Verify code quality before push
+6. /commit            → Create conventional commit
 ```
+
+**NEVER skip steps 1-2. Research and planning are required for ALL tickets.**
 
 ---
 

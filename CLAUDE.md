@@ -65,34 +65,38 @@ When running multiple instances, assign each to a domain:
 ### Structure
 
 ```
-~/Desktop/Ubuntu/
-├── one-percent-trading-bot/     ← Main repo (reconciliation/testing)
-└── worktrees/
-    ├── dev-1/                   ← Worker 1 (any ticket)
-    ├── dev-2/                   ← Worker 2 (any ticket)
-    ├── dev-3/                   ← Worker 3 (any ticket)
-    └── dev-4/                   ← Worker 4 (any ticket)
+~/Desktop/Ubuntu/one-percent-trading-meister/
+├── WORKTREE-MAIN/               ← Main repo (reconciliation/testing, stays on main)
+├── WORKTREE-1/                  ← Worker 1 (any ticket)
+├── WORKTREE-2/                  ← Worker 2 (any ticket)
+├── WORKTREE-3/                  ← Worker 3 (any ticket)
+└── WORKTREE-4/                  ← Worker 4 (any ticket)
 ```
 
 ### Setup (Run Once)
 
 ```bash
-# From the base repo
-cd ~/Desktop/Ubuntu/one-percent-trading-bot
-mkdir -p ../worktrees
+# From WORKTREE-MAIN
+cd ~/Desktop/Ubuntu/one-percent-trading-meister/WORKTREE-MAIN
 
-# Create dev worktrees (detached, ready for any branch)
-git worktree add --detach ../worktrees/dev-1
-git worktree add --detach ../worktrees/dev-2
-git worktree add --detach ../worktrees/dev-3
-git worktree add --detach ../worktrees/dev-4
+# Create worktrees as siblings (detached, ready for any branch)
+git worktree add --detach ../WORKTREE-1
+git worktree add --detach ../WORKTREE-2
+git worktree add --detach ../WORKTREE-3
+git worktree add --detach ../WORKTREE-4
+
+# Copy .envrc to each worktree for direnv
+cp .envrc ../WORKTREE-1/.envrc
+cp .envrc ../WORKTREE-2/.envrc
+cp .envrc ../WORKTREE-3/.envrc
+cp .envrc ../WORKTREE-4/.envrc
 ```
 
 ### Worktree Workflow
 
 ```bash
-# 1. Open terminal in any dev worktree
-cd ~/Desktop/Ubuntu/worktrees/dev-1
+# 1. Open terminal in any worktree
+cd ~/Desktop/Ubuntu/one-percent-trading-meister/WORKTREE-1
 
 # 2. Check SPRINT.md for next priority ticket
 cat ai/docs/shared/SPRINT.md
@@ -106,13 +110,16 @@ git checkout feature/hay-XX-description
 
 # 5. When done: switch back to main, pull, pick next
 git checkout main && git pull
+
+# 6. Allow direnv (first time only)
+direnv allow
 ```
 
 ### Main Repo (Reconciliation)
 
 ```bash
-# Base repo stays on main branch
-cd ~/Desktop/Ubuntu/one-percent-trading-bot
+# WORKTREE-MAIN stays on main branch
+cd ~/Desktop/Ubuntu/one-percent-trading-meister/WORKTREE-MAIN
 
 # Use for:
 # - Running full test suite after merges
@@ -130,7 +137,7 @@ cd ~/Desktop/Ubuntu/one-percent-trading-bot
 git worktree list
 
 # Remove worktree (if needed)
-git worktree remove ../worktrees/dev-4
+git worktree remove ../WORKTREE-4
 
 # Prune stale worktrees
 git worktree prune
@@ -140,8 +147,8 @@ git worktree prune
 
 | Rule                                  | Reason                               |
 | ------------------------------------- | ------------------------------------ |
-| Base repo stays on main               | Clean reconciliation point           |
-| dev-X/ picks any ticket               | Flexible, follows SPRINT.md priority |
+| WORKTREE-MAIN stays on main           | Clean reconciliation point           |
+| WORKTREE-X/ picks any ticket          | Flexible, follows SPRINT.md priority |
 | One branch per worktree at a time     | Git worktree requirement             |
 | Update SPRINT.md when starting ticket | Prevents duplicate work              |
 

@@ -9,7 +9,7 @@
 # -----------------------------------------------------------------------------
 DASHBOARD_DIR := dashboard
 FREQTRADE_DIR := freqtrade
-WORKTREE_DIR := ../worktrees
+WORKTREE_DIR := ..
 
 # -----------------------------------------------------------------------------
 # SETUP TARGETS
@@ -24,12 +24,15 @@ setup-dashboard: ## Install dashboard dependencies
 
 .PHONY: setup-worktrees
 setup-worktrees: ## Create git worktrees for parallel development
-	@mkdir -p $(WORKTREE_DIR)
-	@git worktree add --detach $(WORKTREE_DIR)/dev-1 2>/dev/null || echo "dev-1 already exists"
-	@git worktree add --detach $(WORKTREE_DIR)/dev-2 2>/dev/null || echo "dev-2 already exists"
-	@git worktree add --detach $(WORKTREE_DIR)/dev-3 2>/dev/null || echo "dev-3 already exists"
-	@git worktree add --detach $(WORKTREE_DIR)/dev-4 2>/dev/null || echo "dev-4 already exists"
-	@echo "✓ Worktrees ready:"
+	@git worktree add --detach $(WORKTREE_DIR)/WORKTREE-1 2>/dev/null || echo "WORKTREE-1 already exists"
+	@git worktree add --detach $(WORKTREE_DIR)/WORKTREE-2 2>/dev/null || echo "WORKTREE-2 already exists"
+	@git worktree add --detach $(WORKTREE_DIR)/WORKTREE-3 2>/dev/null || echo "WORKTREE-3 already exists"
+	@git worktree add --detach $(WORKTREE_DIR)/WORKTREE-4 2>/dev/null || echo "WORKTREE-4 already exists"
+	@cp .envrc ../WORKTREE-1/.envrc 2>/dev/null || true
+	@cp .envrc ../WORKTREE-2/.envrc 2>/dev/null || true
+	@cp .envrc ../WORKTREE-3/.envrc 2>/dev/null || true
+	@cp .envrc ../WORKTREE-4/.envrc 2>/dev/null || true
+	@echo "✓ Worktrees ready (with .envrc copied):"
 	@git worktree list
 
 .PHONY: setup-hooks

@@ -18,6 +18,8 @@ LAW 5: ALWAYS update progress files in ai/docs/shared/progress/
 LAW 6: If you change DB schema, update types.ts immediately.
 LAW 7: Use conventional commits: <type>(<scope>): <summary>
 LAW 8: Max 72 chars for commit headers, all lowercase.
+LAW 9: For HAY tickets, evaluate .claude/ralph-decision.md and output decision log.
+LAW 10: Check ai/docs/shared/SPRINT.md for priority order before picking tickets.
 ```
 
 ---
@@ -52,6 +54,96 @@ When running multiple instances, assign each to a domain:
 - Before editing a file, check if another terminal might be working on it
 - Use atomic commits per feature/fix
 - Update progress files so other instances know what's done
+
+---
+
+## Git Worktrees (Parallel Terminal Isolation)
+
+**Problem:** Switching branches in one terminal affects all terminals.
+**Solution:** Git worktrees - each terminal gets its own working directory.
+
+### Structure
+
+```
+~/Desktop/Ubuntu/
+├── one-percent-trading-bot/     ← Main repo (reconciliation/testing)
+└── worktrees/
+    ├── dev-1/                   ← Worker 1 (any ticket)
+    ├── dev-2/                   ← Worker 2 (any ticket)
+    ├── dev-3/                   ← Worker 3 (any ticket)
+    └── dev-4/                   ← Worker 4 (any ticket)
+```
+
+### Setup (Run Once)
+
+```bash
+# From the base repo
+cd ~/Desktop/Ubuntu/one-percent-trading-bot
+mkdir -p ../worktrees
+
+# Create dev worktrees (detached, ready for any branch)
+git worktree add --detach ../worktrees/dev-1
+git worktree add --detach ../worktrees/dev-2
+git worktree add --detach ../worktrees/dev-3
+git worktree add --detach ../worktrees/dev-4
+```
+
+### Worktree Workflow
+
+```bash
+# 1. Open terminal in any dev worktree
+cd ~/Desktop/Ubuntu/worktrees/dev-1
+
+# 2. Check SPRINT.md for next priority ticket
+cat ai/docs/shared/SPRINT.md
+
+# 3. Create/switch to feature branch
+git checkout -b feature/hay-XX-description
+# OR if branch exists:
+git checkout feature/hay-XX-description
+
+# 4. Work on ticket, commit, push
+
+# 5. When done: switch back to main, pull, pick next
+git checkout main && git pull
+```
+
+### Main Repo (Reconciliation)
+
+```bash
+# Base repo stays on main branch
+cd ~/Desktop/Ubuntu/one-percent-trading-bot
+
+# Use for:
+# - Running full test suite after merges
+# - PR reviews and verification
+# - Production builds
+# - Resolving merge conflicts
+
+# Never create feature branches here
+```
+
+### Commands Reference
+
+```bash
+# List all worktrees
+git worktree list
+
+# Remove worktree (if needed)
+git worktree remove ../worktrees/dev-4
+
+# Prune stale worktrees
+git worktree prune
+```
+
+### Rules
+
+| Rule                                  | Reason                               |
+| ------------------------------------- | ------------------------------------ |
+| Base repo stays on main               | Clean reconciliation point           |
+| dev-X/ picks any ticket               | Flexible, follows SPRINT.md priority |
+| One branch per worktree at a time     | Git worktree requirement             |
+| Update SPRINT.md when starting ticket | Prevents duplicate work              |
 
 ---
 
@@ -143,6 +235,7 @@ cd freqtrade && pytest
 **CRITICAL:** Check and update these files every session.
 
 ```
+ai/docs/shared/SPRINT.md           ← ⭐ PRIORITY ORDER (check first)
 ai/docs/shared/progress/HAY-XX.md  ← Current ticket progress
 ai/docs/shared/plans/              ← Implementation plans
 ai/docs/research/                  ← Codebase research
@@ -150,13 +243,15 @@ ai/docs/research/                  ← Codebase research
 
 **Session Start:**
 
-1. Read `ai/docs/shared/progress/` for in-progress tickets
-2. Continue from the **Next** section
+1. Read `ai/docs/shared/SPRINT.md` for priority order
+2. Read `ai/docs/shared/progress/` for in-progress tickets
+3. Continue from the **Next** section of your ticket
 
 **Session End:**
 
 1. Update progress file with completed items
-2. Add next steps for the next session/terminal
+2. Update SPRINT.md status if ticket complete
+3. Add next steps for the next session/terminal
 
 ---
 

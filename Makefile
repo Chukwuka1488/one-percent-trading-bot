@@ -1,22 +1,67 @@
 # =============================================================================
-# Makefile Template for AI-Assisted Development
+# One Percent Trading Bot - Makefile
 # =============================================================================
-# This Makefile contains common development commands from humor-WORKTREE-1
-# All commands are commented out as templates - uncomment and adapt as needed
+# Run `make help` to see all available targets
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# CONFIGURATION VARIABLES
+# CONFIGURATION
 # -----------------------------------------------------------------------------
-# Set your project-specific configuration here
-# GCP_PROJECT ?= your-project-dev
-# NAMESPACE ?= your-namespace
+DASHBOARD_DIR := dashboard
+FREQTRADE_DIR := freqtrade
+WORKTREE_DIR := ../worktrees
 
 # -----------------------------------------------------------------------------
-# FORMATTING TARGETS
+# SETUP TARGETS
 # -----------------------------------------------------------------------------
-# Check/fix formatting for markdown, YAML, and JSON files
-# Requires: npm with prettier installed (npm install)
+.PHONY: setup
+setup: setup-dashboard setup-worktrees ## Set up complete development environment
+	@echo "✓ Setup complete"
+
+.PHONY: setup-dashboard
+setup-dashboard: ## Install dashboard dependencies
+	cd $(DASHBOARD_DIR) && npm install
+
+.PHONY: setup-worktrees
+setup-worktrees: ## Create git worktrees for parallel development
+	@mkdir -p $(WORKTREE_DIR)
+	@git worktree add --detach $(WORKTREE_DIR)/dev-1 2>/dev/null || echo "dev-1 already exists"
+	@git worktree add --detach $(WORKTREE_DIR)/dev-2 2>/dev/null || echo "dev-2 already exists"
+	@git worktree add --detach $(WORKTREE_DIR)/dev-3 2>/dev/null || echo "dev-3 already exists"
+	@git worktree add --detach $(WORKTREE_DIR)/dev-4 2>/dev/null || echo "dev-4 already exists"
+	@echo "✓ Worktrees ready:"
+	@git worktree list
+
+.PHONY: setup-hooks
+setup-hooks: ## Install git pre-commit hooks
+	cd $(DASHBOARD_DIR) && npm install husky --save-dev
+	cd $(DASHBOARD_DIR) && npx husky init
+	@echo '#!/bin/sh\nmake check-quick' > $(DASHBOARD_DIR)/.husky/pre-commit
+	@chmod +x $(DASHBOARD_DIR)/.husky/pre-commit
+	@echo "✓ Pre-commit hook installed"
+
+# -----------------------------------------------------------------------------
+# CODE QUALITY TARGETS
+# -----------------------------------------------------------------------------
+.PHONY: check
+check: check-lint check-types check-format test ## Run ALL code quality checks
+	@echo "✓ All checks passed"
+
+.PHONY: check-quick
+check-quick: check-lint check-types ## Quick checks (no tests) - used by pre-commit
+	@echo "✓ Quick checks passed"
+
+.PHONY: check-lint
+check-lint: ## Run linter
+	cd $(DASHBOARD_DIR) && npm run lint
+
+.PHONY: check-types
+check-types: ## Run TypeScript type checking
+	cd $(DASHBOARD_DIR) && npm run typecheck
+
+.PHONY: check-format
+check-format: ## Check formatting
+	npm run format:check
 
 .PHONY: format
 format: ## Check formatting for markdown files
@@ -27,81 +72,60 @@ format-fix: ## Fix formatting for markdown files
 	npm run format:fix
 
 # -----------------------------------------------------------------------------
-# CODE QUALITY CHECK TARGETS
-# -----------------------------------------------------------------------------
-# Run linting, type checking, and static analysis
-# Adapt these for your specific language/framework
-
-# .PHONY: check
-# check: format check-lint check-types ## Run all code quality checks
-# 	@echo "All checks passed!"
-
-# .PHONY: check-lint
-# check-lint: ## Run linter
-# 	# For Go: golangci-lint run
-# 	# For Python: ruff check . --fix
-# 	# For TypeScript: npm run lint
-# 	@echo "Implement linting for your project"
-
-# .PHONY: check-types
-# check-types: ## Run type checking
-# 	# For TypeScript: npm run typecheck
-# 	# For Python: mypy .
-# 	@echo "Implement type checking for your project"
-
-# -----------------------------------------------------------------------------
 # TEST TARGETS
 # -----------------------------------------------------------------------------
-# Run tests for different components
+.PHONY: test
+test: test-dashboard ## Run all tests
+	@echo "✓ All tests passed"
 
-# .PHONY: test
-# test: ## Run all tests
-# 	# For Go: go test -race -cover ./...
-# 	# For Python: pytest
-# 	# For TypeScript/JS: npm test
-# 	@echo "Implement tests for your project"
+.PHONY: test-dashboard
+test-dashboard: ## Run dashboard tests
+	cd $(DASHBOARD_DIR) && npm test -- --passWithNoTests
 
-# .PHONY: test-unit
-# test-unit: ## Run unit tests only
-# 	@echo "Implement unit tests for your project"
+.PHONY: test-freqtrade
+test-freqtrade: ## Run Freqtrade strategy tests
+	cd $(FREQTRADE_DIR) && docker compose run --rm freqtrade pytest
 
-# .PHONY: test-integration
-# test-integration: ## Run integration tests
-# 	@echo "Implement integration tests for your project"
-
-# .PHONY: test-e2e
-# test-e2e: ## Run end-to-end tests
-# 	@echo "Implement e2e tests for your project"
+.PHONY: test-watch
+test-watch: ## Run dashboard tests in watch mode
+	cd $(DASHBOARD_DIR) && npm test -- --watch
 
 # -----------------------------------------------------------------------------
 # BUILD TARGETS
 # -----------------------------------------------------------------------------
-# Compile/build your application
+.PHONY: build
+build: build-dashboard ## Build all components
+	@echo "✓ Build complete"
 
-# .PHONY: build
-# build: ## Build the application
-# 	# For Go: go build -v -o bin/app ./cmd/app
-# 	# For TypeScript/React: npm run build
-# 	# For Python: poetry build
-# 	@echo "Implement build for your project"
-
-# .PHONY: build-all
-# build-all: ## Build all components
-# 	@echo "Implement build-all for your project"
+.PHONY: build-dashboard
+build-dashboard: ## Build dashboard for production
+	cd $(DASHBOARD_DIR) && npm run build
 
 # -----------------------------------------------------------------------------
-# DOCKER BUILD TARGETS
+# DEVELOPMENT TARGETS
 # -----------------------------------------------------------------------------
-# Build Docker images for containerized deployment
+.PHONY: dev
+dev: ## Start dashboard development server
+	cd $(DASHBOARD_DIR) && npm run dev
 
+.PHONY: dev-all
+dev-all: up dev ## Start Docker services AND dashboard dev server
+
+# -----------------------------------------------------------------------------
+# DOCKER TARGETS
+# -----------------------------------------------------------------------------
 .PHONY: up
 up: ## Start all Docker services
-	@mkdir -p .docker/postgres .docker/n8n
+	@mkdir -p .docker/postgres .docker/n8n .docker/prometheus .docker/grafana .docker/loki
 	docker compose up -d
 
 .PHONY: down
 down: ## Stop all Docker services
 	docker compose down
+
+.PHONY: restart
+restart: down up ## Restart all Docker services
+	@echo "✓ Services restarted"
 
 .PHONY: logs
 logs: ## Tail logs from all services
@@ -115,10 +139,17 @@ logs-n8n: ## Tail n8n logs
 logs-freqtrade: ## Tail Freqtrade logs
 	docker compose logs -f freqtrade
 
+.PHONY: logs-grafana
+logs-grafana: ## Tail Grafana logs
+	docker compose logs -f grafana
+
 .PHONY: ps
 ps: ## Show running containers
 	docker compose ps
 
+# -----------------------------------------------------------------------------
+# FREQTRADE TARGETS
+# -----------------------------------------------------------------------------
 .PHONY: trades
 trades: ## Show open Freqtrade trades
 	@curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/status | python3 -c "\
@@ -133,138 +164,76 @@ trades: ## Show open Freqtrade trades
 balance: ## Show Freqtrade wallet balance
 	@curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/balance | python3 -m json.tool
 
-# .PHONY: docker-build
-# docker-build: ## Build Docker image
-# 	# docker build -t your-app:latest .
-# 	@echo "Implement docker build for your project"
-
-# .PHONY: docker-push
-# docker-push: ## Build and push Docker image to registry
-# 	# docker build -t gcr.io/$(GCP_PROJECT)/your-app:latest .
-# 	# docker push gcr.io/$(GCP_PROJECT)/your-app:latest
-# 	@echo "Implement docker push for your project"
+.PHONY: profit
+profit: ## Show Freqtrade profit summary
+	@curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/profit | python3 -m json.tool
 
 # -----------------------------------------------------------------------------
-# DEPLOYMENT TARGETS
+# SECURITY TARGETS
 # -----------------------------------------------------------------------------
-# Deploy to various environments (k8s, cloud functions, etc.)
+.PHONY: security
+security: security-dashboard ## Run all security audits
+	@echo "✓ Security audit complete"
 
-# .PHONY: deploy
-# deploy: ## Deploy to development environment
-# 	# kubectl apply -f k8s/dev/
-# 	# OR: firebase deploy
-# 	# OR: gcloud run deploy
-# 	@echo "Implement deploy for your project"
+.PHONY: security-dashboard
+security-dashboard: ## Audit dashboard dependencies for vulnerabilities
+	cd $(DASHBOARD_DIR) && npm audit
 
-# .PHONY: deploy-prod
-# deploy-prod: ## Deploy to production (use with caution!)
-# 	@echo "Implement production deploy for your project"
-
-# -----------------------------------------------------------------------------
-# SHELL/DEBUG TARGETS
-# -----------------------------------------------------------------------------
-# Access running pods/containers for debugging
-
-# .PHONY: shell
-# shell: ## Open shell in running container
-# 	# kubectl exec -it deployment/your-app -n $(NAMESPACE) -- /bin/sh
-# 	@echo "Implement shell access for your project"
-
-# .PHONY: logs
-# logs: ## Tail logs from running container
-# 	# kubectl logs -f deployment/your-app -n $(NAMESPACE)
-# 	@echo "Implement log tailing for your project"
-
-# -----------------------------------------------------------------------------
-# SETUP TARGETS
-# -----------------------------------------------------------------------------
-# Set up development environment
-
-# .PHONY: setup
-# setup: ## Set up development environment
-# 	# npm install (or yarn install)
-# 	# pip install -r requirements.txt
-# 	# go mod download
-# 	@echo "Implement setup for your project"
-
-# .PHONY: setup-hooks
-# setup-hooks: ## Install git hooks (husky, pre-commit, etc.)
-# 	# npm install (installs husky via postinstall)
-# 	# pre-commit install
-# 	@echo "Implement git hooks setup for your project"
+.PHONY: security-fix
+security-fix: ## Auto-fix security vulnerabilities where possible
+	cd $(DASHBOARD_DIR) && npm audit fix
 
 # -----------------------------------------------------------------------------
 # CLEAN TARGETS
 # -----------------------------------------------------------------------------
-# Clean up build artifacts and temporary files
+.PHONY: clean
+clean: ## Clean build artifacts
+	rm -rf $(DASHBOARD_DIR)/dist
+	rm -rf $(DASHBOARD_DIR)/node_modules/.cache
+	@echo "✓ Cleaned build artifacts"
 
-# .PHONY: clean
-# clean: ## Clean build artifacts
-# 	# rm -rf dist/ build/ *.egg-info/
-# 	# rm -rf node_modules/ .next/
-# 	# rm -f bin/*
-# 	@echo "Implement clean for your project"
+.PHONY: clean-all
+clean-all: clean ## Clean everything including node_modules
+	rm -rf $(DASHBOARD_DIR)/node_modules
+	@echo "✓ Cleaned all dependencies (run 'make setup' to reinstall)"
 
-# -----------------------------------------------------------------------------
-# DEVELOPMENT TARGETS
-# -----------------------------------------------------------------------------
-# Run the application in development mode
-
-# .PHONY: dev
-# dev: ## Start development server
-# 	# For web apps: npm run dev
-# 	# For Go: air (hot reload) or go run .
-# 	# For Python: uvicorn app:app --reload
-# 	@echo "Implement dev server for your project"
-
-# .PHONY: dev-watch
-# dev-watch: ## Start with file watching/hot reload
-# 	@echo "Implement file watching for your project"
+.PHONY: clean-docker
+clean-docker: down ## Stop services and remove volumes
+	docker compose down -v
+	@echo "✓ Docker volumes removed"
 
 # -----------------------------------------------------------------------------
-# DATABASE/MIGRATION TARGETS
+# WORKTREE TARGETS
 # -----------------------------------------------------------------------------
-# Database operations and migrations
+.PHONY: worktrees
+worktrees: ## List all git worktrees
+	@git worktree list
 
-# .PHONY: migrate
-# migrate: ## Run database migrations
-# 	# alembic upgrade head
-# 	# npx prisma migrate dev
-# 	# goose up
-# 	@echo "Implement migrations for your project"
-
-# .PHONY: migrate-rollback
-# migrate-rollback: ## Rollback last migration
-# 	@echo "Implement migration rollback for your project"
+.PHONY: worktree-prune
+worktree-prune: ## Remove stale worktree references
+	git worktree prune
+	@echo "✓ Worktrees pruned"
 
 # -----------------------------------------------------------------------------
-# SECURITY AUDIT TARGETS
+# CI TARGETS (for GitHub Actions / CI pipelines)
 # -----------------------------------------------------------------------------
-# Security scanning for dependencies and code
-
-# .PHONY: security-audit
-# security-audit: ## Run security audit on dependencies
-# 	# For Python: pip-audit -r requirements.txt --strict
-# 	# For Node: npm audit
-# 	# For Go: govulncheck ./...
-# 	@echo "Implement security audit for your project"
+.PHONY: ci
+ci: setup-dashboard check build ## Run full CI pipeline
+	@echo "✓ CI pipeline passed"
 
 # -----------------------------------------------------------------------------
-# HELP TARGET
+# HELP
 # -----------------------------------------------------------------------------
 .PHONY: help
 help: ## Show this help message
-	@echo "Available targets:"
+	@echo "One Percent Trading Bot - Available Commands"
 	@echo ""
-	@echo "This Makefile is a template. Uncomment and adapt targets as needed."
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 	@echo ""
-	@echo "Common patterns:"
-	@echo "  make check        - Run all code quality checks"
-	@echo "  make test         - Run all tests"
-	@echo "  make build        - Build the application"
-	@echo "  make dev          - Start development server"
-	@echo "  make deploy       - Deploy to development environment"
-	@echo ""
-	@echo "See Makefile comments for detailed examples."
+	@echo "Examples:"
+	@echo "  make setup          # First-time setup"
+	@echo "  make dev-all        # Start everything for development"
+	@echo "  make check          # Run all quality checks"
+	@echo "  make test           # Run all tests"
 
 .DEFAULT_GOAL := help

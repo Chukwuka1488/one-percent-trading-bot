@@ -148,7 +148,8 @@ class OnePercentAdaptive(IStrategy):
         dataframe['bb_upper'] = bollinger['upper']
 
         # Bollinger Band Width (for breakout detection)
-        dataframe['bb_width'] = (dataframe['bb_upper'] - dataframe['bb_lower']) / dataframe['bb_middle']
+        # Protect against division by zero
+        dataframe['bb_width'] = (dataframe['bb_upper'] - dataframe['bb_lower']) / dataframe['bb_middle'].replace(0, np.nan)
 
         # BB Width percentile (rolling) - low values indicate squeeze
         dataframe['bb_width_pct'] = dataframe['bb_width'].rolling(window=50).apply(
@@ -159,7 +160,8 @@ class OnePercentAdaptive(IStrategy):
 
         # Volume SMA for surge detection
         dataframe['volume_sma'] = ta.SMA(dataframe['volume'], timeperiod=20)
-        dataframe['volume_surge'] = dataframe['volume'] / dataframe['volume_sma']
+        # Protect against division by zero
+        dataframe['volume_surge'] = dataframe['volume'] / dataframe['volume_sma'].replace(0, np.nan)
 
         # Price momentum for breakout direction
         dataframe['momentum'] = ta.MOM(dataframe, timeperiod=10)
@@ -292,7 +294,8 @@ class OnePercentAdaptive(IStrategy):
 
         # ===== BREAKOUT EXIT =====
         breakout_exit = (
-            # Was a breakout entry (momentum was positive)
+            # Was a breakout entry: verify we were in squeeze/low-ADX regime
+            (dataframe['regime_squeeze'].shift(5) == 1) &
             (dataframe['momentum'].shift(5) > 0) &
             (
                 # Signal: Momentum reversal

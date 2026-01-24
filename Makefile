@@ -172,6 +172,28 @@ profit: ## Show Freqtrade profit summary
 	@curl -s -u freqtrade:freqtrade http://localhost:8080/api/v1/profit | python3 -m json.tool
 
 # -----------------------------------------------------------------------------
+# DATABASE TARGETS
+# -----------------------------------------------------------------------------
+.PHONY: db-shell
+db-shell: ## Open PostgreSQL shell
+	docker exec -it trading-postgres psql -U trading -d trading_bot
+
+.PHONY: db-backup
+db-backup: ## Backup PostgreSQL database
+	@mkdir -p .backups
+	docker exec trading-postgres pg_dump -U trading trading_bot > .backups/backup_$$(date +%Y%m%d_%H%M%S).sql
+	@echo "Backup saved to .backups/"
+
+.PHONY: db-trades
+db-trades: ## Show recent trades from database
+	docker exec trading-postgres psql -U trading -d trading_bot -c "SELECT id, pair, is_open, stake_amount, open_rate, profit_pct, open_date FROM trades ORDER BY open_date DESC LIMIT 10;"
+
+.PHONY: db-stats
+db-stats: ## Show database statistics
+	@echo "Trade Statistics:"
+	@docker exec trading-postgres psql -U trading -d trading_bot -c "SELECT is_open, COUNT(*) as count, ROUND(AVG(profit_pct)::numeric, 2) as avg_profit_pct FROM trades GROUP BY is_open;"
+
+# -----------------------------------------------------------------------------
 # SECURITY TARGETS
 # -----------------------------------------------------------------------------
 .PHONY: security

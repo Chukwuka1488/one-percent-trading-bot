@@ -86,6 +86,9 @@ set_defaults() {
     export TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
     export TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
     export FREQTRADE_API_USER="${FREQTRADE_API_USER:-freqtrade}"
+
+    # Database URL (PostgreSQL by default for Docker, SQLite fallback)
+    export FREQTRADE_DB_URL="${FREQTRADE_DB_URL:-postgresql://trading:trading_local@postgres:5432/trading_bot}"
 }
 
 # =============================================================================

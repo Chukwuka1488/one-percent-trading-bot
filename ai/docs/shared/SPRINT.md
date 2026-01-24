@@ -48,7 +48,7 @@ HAY-12 (Strategy) ───────────┼─→ HAY-13 (Risk Manage
 | 9   | HAY-9  | Exchange Paper Trading Setup     | Pending  | HAY-12, HAY-38        | Yes           |
 | 10  | HAY-24 | Live Trading Activation          | Pending  | HAY-9, HAY-13, HAY-21 | Yes           |
 | 11  | HAY-22 | Error Recovery & Reconnection    | Pending  | HAY-21                | No            |
-| 12  | HAY-25 | Database & Trade Persistence     | Pending  | None                  | No            |
+| 12  | HAY-25 | Database & Trade Persistence     | Active   | None                  | No            |
 | 13  | HAY-15 | VPS Infrastructure Setup         | Pending  | None                  | No            |
 | 14  | HAY-16 | Production Deployment            | Pending  | HAY-15, HAY-24        | No            |
 
@@ -68,13 +68,13 @@ HAY-12 (Strategy) ───────────┼─→ HAY-13 (Risk Manage
 
 ## Worktree Assignment
 
-| Worktree      | Purpose                  | Current Ticket | Branch                                     |
-| ------------- | ------------------------ | -------------- | ------------------------------------------ |
-| WORKTREE-MAIN | Reconciliation & testing | -              | `main` (always)                            |
-| `WORKTREE-1/` | Worker                   | -              | -                                          |
-| `WORKTREE-2/` | Worker                   | HAY-37         | `feature/hay-37-exchange-migration-kraken` |
-| `WORKTREE-3/` | Worker                   | -              | -                                          |
-| `WORKTREE-4/` | Worker                   | -              | -                                          |
+| Worktree      | Purpose                  | Current Ticket | Branch                                      |
+| ------------- | ------------------------ | -------------- | ------------------------------------------- |
+| WORKTREE-MAIN | Reconciliation & testing | -              | `main` (always)                             |
+| `WORKTREE-1/` | Worker                   | -              | -                                           |
+| `WORKTREE-2/` | Worker                   | HAY-37         | `feature/hay-37-exchange-migration-kraken`  |
+| `WORKTREE-3/` | Worker                   | HAY-25         | `feature/hay-25-database-trade-persistence` |
+| `WORKTREE-4/` | Worker                   | -              | -                                           |
 
 **Update this table when starting a ticket** to prevent duplicate work.
 

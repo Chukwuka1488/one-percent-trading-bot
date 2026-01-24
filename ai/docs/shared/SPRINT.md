@@ -39,7 +39,7 @@ HAY-12 (Strategy) ───────────┼─→ HAY-13 (Risk Manage
 | --- | ------ | -------------------------------- | -------- | --------------------- | ------------- |
 | 1   | HAY-30 | Layout Templates                 | Complete | None                  | -             |
 | 2   | HAY-37 | Exchange Migration (→ Kraken)    | Active   | None                  | Yes           |
-| 3   | HAY-12 | Basic Trading Strategy           | Active   | None                  | Yes           |
+| 3   | HAY-12 | Basic Trading Strategy           | Complete | None                  | Yes           |
 | 4   | HAY-38 | Kraken API Setup & Validation    | Pending  | HAY-37                | Yes           |
 | 5   | HAY-39 | Kraken Trading Pairs Research    | Pending  | HAY-37                | Yes           |
 | 6   | HAY-13 | Risk Management: Position Sizing | Pending  | HAY-12                | Yes           |
@@ -58,6 +58,7 @@ HAY-12 (Strategy) ───────────┼─→ HAY-13 (Risk Manage
 
 | Ticket | Title                     | Merged   |
 | ------ | ------------------------- | -------- |
+| HAY-12 | Basic Trading Strategy    | PR ready |
 | HAY-25 | Database & Trade Persist  | Merged   |
 | HAY-31 | Freqtrade API Integration | PR ready |
 | HAY-29 | Organism Components       | Complete |
@@ -72,7 +73,7 @@ HAY-12 (Strategy) ───────────┼─→ HAY-13 (Risk Manage
 | Worktree      | Purpose                  | Current Ticket | Branch                                     |
 | ------------- | ------------------------ | -------------- | ------------------------------------------ |
 | WORKTREE-MAIN | Reconciliation & testing | -              | `main` (always)                            |
-| `WORKTREE-1/` | Worker                   | HAY-12         | `feature/hay-12-basic-trading-strategy`    |
+| `WORKTREE-1/` | Worker                   | -              | -                                          |
 | `WORKTREE-2/` | Worker                   | HAY-37         | `feature/hay-37-exchange-migration-kraken` |
 | `WORKTREE-3/` | Worker                   | -              | -                                          |
 | `WORKTREE-4/` | Worker                   | -              | -                                          |

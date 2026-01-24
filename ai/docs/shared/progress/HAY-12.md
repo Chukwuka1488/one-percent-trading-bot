@@ -1,6 +1,6 @@
 # HAY-12: Basic Trading Strategy
 
-## Status: In Progress
+## Status: Complete
 
 ## Objective
 
@@ -8,9 +8,9 @@ Implement first simple trading strategy using Freqtrade.
 
 ## Acceptance Criteria
 
-- [ ] Choose strategy (grid, DCA, or trend-following)
-- [ ] Implement using Freqtrade plugin system
-- [ ] Test on BTC/USDT, ETH/USDT paper trading
+- [x] Choose strategy: **Adaptive** (trend-following + mean-reversion + breakout)
+- [x] Implement using Freqtrade plugin system (`OnePercentAdaptive.py`)
+- [x] Test on BTC/USD, ETH/USD paper trading (Kraken)
 
 ## Progress
 

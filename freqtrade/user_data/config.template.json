@@ -70,5 +70,6 @@
   "force_entry_enable": false,
   "internals": {
     "process_throttle_secs": 5
-  }
+  },
+  "db_url": "$FREQTRADE_DB_URL"
 }

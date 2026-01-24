@@ -24,7 +24,7 @@ if command -v ggshield >/dev/null 2>&1; then
   echo "✓ No secrets detected"
 else
   echo "⚠️  ggshield not installed - skipping secret scan"
-  echo "   Install with: brew install ggshield"
+  echo "   Install: pipx install ggshield (Linux) or brew install ggshield (Mac)"
   echo "   Then run: ggshield auth login"
 fi
 

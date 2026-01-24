@@ -27,11 +27,39 @@ If Linear CLI unavailable, check:
 - `ai/docs/shared/SPRINT.md` for ticket context
 - `ai/docs/shared/progress/HAY-XX.md` for existing progress
 
-**Output:** Document ticket requirements in progress file.
+**Output:** Document ticket requirements.
 
 ---
 
-### Step 2: Research Codebase (`/research-codebase`)
+### Step 2: Claim Ticket (CRITICAL - Do This Immediately!)
+
+**Other worktrees need to know what you're working on BEFORE you start.**
+
+1. Create feature branch:
+
+   ```bash
+   git checkout -b feature/hay-XX-description
+   ```
+
+2. Update `ai/docs/shared/SPRINT.md`:
+   - Set ticket status to "Active"
+   - Add worktree assignment (your worktree + ticket + branch)
+   - Add files you'll edit to "Files Being Edited" table
+
+3. Create progress file `ai/docs/shared/progress/HAY-XX.md`
+
+4. **COMMIT AND PUSH IMMEDIATELY:**
+   ```bash
+   git add ai/docs/shared/SPRINT.md ai/docs/shared/progress/HAY-XX.md
+   git commit -m "chore(sprint): claim hay-XX for worktree-N"
+   git push -u origin feature/hay-XX-description
+   ```
+
+**WHY:** Other worktrees fetch/pull to see claimed tickets. If you don't push, they can't see your claim and may duplicate work.
+
+---
+
+### Step 3: Research Codebase (`/research-codebase`)
 
 Invoke the research command to understand the codebase:
 
@@ -47,7 +75,7 @@ for implementing HAY-XX: [ticket title]"
 
 ---
 
-### Step 3: Review Research
+### Step 4: Review Research
 
 Before planning, verify research is complete:
 
@@ -60,7 +88,7 @@ If gaps exist, run additional research queries.
 
 ---
 
-### Step 4: Create Plan (`/create-plan`)
+### Step 5: Create Plan (`/create-plan`)
 
 Invoke the planning command:
 
@@ -75,7 +103,7 @@ create an implementation plan for HAY-XX: [ticket title]
 
 ---
 
-### Step 5: Review Plan
+### Step 6: Review Plan
 
 Before implementation, verify plan is complete:
 
@@ -88,7 +116,7 @@ Get user approval before proceeding.
 
 ---
 
-### Step 6: Implement Plan (`/implement-plan`)
+### Step 7: Implement Plan (`/implement-plan`)
 
 Execute the approved plan:
 
@@ -100,7 +128,7 @@ Execute the approved plan:
 
 ---
 
-### Step 7: Code Review (`/code-review`)
+### Step 8: Code Review (`/code-review`)
 
 Run code review before committing:
 
@@ -112,7 +140,7 @@ Fix any issues identified.
 
 ---
 
-### Step 8: Commit (`/commit`)
+### Step 9: Commit (`/commit`)
 
 Create conventional commit:
 
@@ -122,13 +150,22 @@ Create conventional commit:
 
 ---
 
-### Step 9: Update Progress
+### Step 10: Update Progress & Push
 
 Update tracking files:
 
 1. `ai/docs/shared/progress/HAY-XX.md` - Mark completed items
-2. `ai/docs/shared/SPRINT.md` - Update status if complete
-3. Clear "Files Being Edited" section
+2. `ai/docs/shared/SPRINT.md`:
+   - Update status to "Complete"
+   - Clear worktree assignment (set to "-")
+   - Clear "Files Being Edited" entries
+
+3. **Commit and push:**
+   ```bash
+   git add ai/docs/shared/
+   git commit -m "docs(progress): complete hay-XX"
+   git push
+   ```
 
 ---
 
@@ -140,28 +177,39 @@ Copy this for each ticket:
 ## HAY-XX Workflow Checklist
 
 - [ ] Step 1: Fetch ticket details
-- [ ] Step 2: /research-codebase
-- [ ] Step 3: Review research (no gaps)
-- [ ] Step 4: /create-plan
-- [ ] Step 5: Review plan (user approved)
-- [ ] Step 6: /implement-plan
-- [ ] Step 7: /code-review (all issues fixed)
-- [ ] Step 8: /commit
-- [ ] Step 9: Update progress files
+- [ ] Step 2: Claim ticket (update SPRINT.md, commit, PUSH)
+- [ ] Step 3: /research-codebase
+- [ ] Step 4: Review research (no gaps)
+- [ ] Step 5: /create-plan
+- [ ] Step 6: Review plan (user approved)
+- [ ] Step 7: /implement-plan
+- [ ] Step 8: /code-review (all issues fixed)
+- [ ] Step 9: /commit
+- [ ] Step 10: Update progress files and PUSH
 ```
 
 ---
 
 ## Quick Reference
 
-| Step | Command              | Output Location            |
-| ---- | -------------------- | -------------------------- |
-| 1    | `linear get-issue`   | Progress file              |
-| 2    | `/research-codebase` | `ai/docs/shared/research/` |
-| 3    | Manual review        | -                          |
-| 4    | `/create-plan`       | `ai/docs/shared/plans/`    |
-| 5    | Manual review        | -                          |
-| 6    | `/implement-plan`    | Source code                |
-| 7    | `/code-review`       | -                          |
-| 8    | `/commit`            | Git commit                 |
-| 9    | Manual update        | Progress files             |
+| Step | Command              | Output Location            | Push?   |
+| ---- | -------------------- | -------------------------- | ------- |
+| 1    | `linear get-issue`   | -                          | No      |
+| 2    | Manual + git         | SPRINT.md, progress/       | **YES** |
+| 3    | `/research-codebase` | `ai/docs/shared/research/` | No      |
+| 4    | Manual review        | -                          | No      |
+| 5    | `/create-plan`       | `ai/docs/shared/plans/`    | No      |
+| 6    | Manual review        | -                          | No      |
+| 7    | `/implement-plan`    | Source code                | No      |
+| 8    | `/code-review`       | -                          | No      |
+| 9    | `/commit`            | Git commit                 | No      |
+| 10   | Manual + git         | Progress files             | **YES** |
+
+---
+
+## Critical Rules
+
+1. **ALWAYS push after claiming** - Other worktrees can't see unpushed commits
+2. **Check SPRINT.md before claiming** - Ensure ticket isn't already claimed
+3. **Update "Files Being Edited"** - Prevents merge conflicts
+4. **Clear tracking on completion** - Free up the ticket for others to verify
